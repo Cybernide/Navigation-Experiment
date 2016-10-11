@@ -13,7 +13,7 @@ import vizshape
 # lighting effects
 import vizfx
 import vizact
-from random import randint
+from random import randint, sample
 
 
 
@@ -21,7 +21,7 @@ viz.go()
 
 #set graphical parameters
 viz.setMultiSample(4)
-viz.fov(60)
+viz.fov(50)
 viz.go()
 
 # this section is really just so I can walk around like it's a computer game
@@ -47,7 +47,7 @@ t1 = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
 grass = viz.addTexture('images/tile_grass.jpg', wrap=viz.REPEAT)
 
 # Add white point light 
-light = vizfx.addPointLight(color=viz.WHITE, pos=(0,2,2))
+light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
 
 # Add ground
 ground = viz.addChild('ground.osgb')
@@ -58,7 +58,7 @@ viz.fogcolor(0.5,0.5,0.5)
 
 #Use linear fog that start from 1 meter in front of the user 
 #And at 10 meters in front of the user 
-viz.fog(1,10)
+viz.fog(2,20)
 
 # initialize first plane
 planeL=vizshape.addBox([50,2,6])
@@ -74,10 +74,10 @@ planeR.texture(t1)
 planeS = vizshape.addBox([10,2,6])
 planeS.setPosition([-10,0,0])
 
-sky = viz.add(viz.ENVIRONMENT_MAP,'sky.jpg')
+#sky = viz.add(viz.ENVIRONMENT_MAP,'sky.jpg')
 
-skybox = viz.add('skydome.dlc')
-skybox.texture(sky)
+#skybox = viz.add('skydome.dlc')
+#skybox.texture(sky)
 
 inLDoor = False
 inRDoor = False
@@ -112,11 +112,21 @@ def enterProximity(event):
 	if event.sensor == lDoorSensor:
 		inLDoor = True
 		viz.MainView.setPosition([-9, 2, 0])
+		changePathWidth(1)
+		#setPathConditions()
 	elif event.sensor == rDoorSensor:
 		inRDoor = True
 		viz.MainView.setPosition([-9, 2, 0])
+		setPathConditions()
 		
 def setPathConditions():
+	global planeL
+	global planeR
+	
+	# Clear planeL and planeR
+	planeL.remove()
+	planeR.remove()
+	
 	pathcond = sample(xrange(5),2)
 	for i in pathcond:
 		if i == 0:
@@ -136,43 +146,160 @@ def setPathConditions():
 			curvePath(pathgen)
 			
 def changePathWidth(path):
+	global planeL
+	global planeR
+	
+	# Clear planeL and planeR
+	
 	if path == 0:
-		# Left is narrow, right is baseline
-		return None
+		# Left is narrow
+		planeL=vizshape.addBox([50,2,3])
+		planeL.setPosition([6, 0, 4.5])
+		planeL.texture(t1)
+		# Right is baseline
+		planeR=vizshape.addBox([50,2,6])
+		planeR.setPosition([6.0, 0, -6])
+		planeR.texture(t1)		
+		
 	elif path == 1:
 		# Left is baseline, right is narrow
-		return None
+		planeL=vizshape.addBox([50,2,6])
+		planeL.setPosition([6.0, 0, 6])
+		planeL.texture(t1)
+		# right is narrow
+		planeR=vizshape.addBox([50,2,3])
+		planeR.setPosition([6, 0, -4.5])
+		planeR.texture(t1)
+		
 	elif path == 2:
-		# Left is wide, right is baseline
-		return None
+		# Left is wide, 
+		planeL=vizshape.addBox([50,2,12])
+		planeL.setPosition([6.0, 0, 9])
+		planeL.texture(t1)
+		# right is baseline
+		planeR=vizshape.addBox([50,2,6])
+		planeR.setPosition([6.0, 0, -6])
+		planeR.texture(t1)
+		
 	elif path == 3:
-		# Left is baseline, right is wide
-		return None
+		# Left is baseline,
+		planeL=vizshape.addBox([50,2,6])
+		planeL.setPosition([6.0, 0, 6])
+		planeL.texture(t1)
+		#right is wide
+		planeR=vizshape.addBox([50,2,12])
+		planeR.setPosition([6.0, 0, -9])
+		planeR.texture(t1)
+		
 	elif path == 4:
-		# Left is narrow, right is wide
-		return None
+		# Left is narrow
+		planeL=vizshape.addBox([50,2,3])
+		planeL.setPosition([6, 0, 4.5])
+		planeL.texture(t1)
+		# Right is wide
+		planeR=vizshape.addBox([50,2,12])
+		planeR.setPosition([6, 0, -9])
+		planeR.texture(t1)
+		
 	elif path == 5:
-		# Left is wide, right is narrow
-		return None
+		# Left is wide, 
+		planeL=vizshape.addBox([50,2,12])
+		planeL.setPosition([6, 0, 9])
+		planeL.texture(t1)
+		# right is narrow
+		planeR=vizshape.addBox([50,2,3])
+		planeR.setPosition([6, 0, -4.5])
+		planeR.texture(t1)
+
 def inclinePath(path):
+	global planeL
+	global planeR
+	
+	# Clear planeL and planeR
+	
 	if path == 0:
 		# Left inclines down, right is baseline
-		return None
+		# initialize first plane
+		
+		if not planeL:
+			planeL=vizshape.addBox([50,2,6])
+			planeL.setPosition([6.0, 0, 6])
+			planeL.texture(t1)
+		planeL.setEuler([0,0,-20])
+		# initialize second plane
+		
+		if not planeR:
+			planeR=vizshape.addBox([50,2,6])
+			planeR.setPosition([6.0, 0, -6])
+			planeR.texture(t1)
+		
 	elif path == 1:
 		# Left is baseline, right inclines down
-		return None
+		if not planeL:
+			planeL=vizshape.addBox([50,2,6])
+			planeL.setPosition([6.0, 0, 6])
+			planeL.texture(t1)
+		
+		if not planeR:
+			planeR=vizshape.addBox([50,2,6])
+			planeR.setPosition([6.0, 0, -6])
+			planeR.texture(t1)
+		planeR.setEuler([0,0,-20])
+		
 	elif path == 2:
 		# Left inclines up, right is baseline
-		return None
+		if not planeL:
+			planeL=vizshape.addBox([50,2,6])
+			planeL.setPosition([6.0, 0, 6])
+			planeL.texture(t1)
+		planeL.setEuler([0,0,20]) # incline up
+		
+		if not planeR:
+			planeR=vizshape.addBox([50,2,6])
+			planeR.setPosition([6.0, 0, -6])
+			planeR.texture(t1)
+			
 	elif path == 3:
 		# Left is baseline, right inclines up
-		return None
+		if not planeL:
+			planeL=vizshape.addBox([50,2,6])
+			planeL.setPosition([6.0, 0, 6])
+			planeL.texture(t1)
+		
+		if not planeR:
+			planeR=vizshape.addBox([50,2,6])
+			planeR.setPosition([6.0, 0, -6])
+			planeR.texture(t1)
+		planeR.setEuler([0,0,20]) # incline up
+			
 	elif path == 4:
 		# Left inclines down, right inclines up
-		return None
+		if not planeL:
+			planeL=vizshape.addBox([50,2,6])
+			planeL.setPosition([6.0, 0, 6])
+			planeL.texture(t1)
+		planeL.setEuler([0,0,-20])
+		
+		if not planeR:
+			planeR=vizshape.addBox([50,2,6])
+			planeR.setPosition([6.0, 0, -6])
+			planeR.texture(t1)
+		planeR.setEuler([0,0,20])
+		
 	elif path == 5:
 		# Left inclines up, right inclines down
-		return None
+		if not planeL:
+			planeL=vizshape.addBox([50,2,6])
+			planeL.setPosition([6.0, 0, 6])
+			planeL.texture(t1)
+		planeL.setEuler([0,0,20])
+		
+		if not planeR:
+			planeR=vizshape.addBox([50,2,6])
+			planeR.setPosition([6.0, 0, -6])
+			planeR.texture(t1)
+		planeR.setEuler([0,0,-20])
+		
 def setPathFriction(path):
 	if path == 0:
 		# Left is shiny, right is matte
@@ -180,6 +307,7 @@ def setPathFriction(path):
 	elif path == 1:
 		# Left is matte, right is shiny
 		return None
+
 def changePathTexture(path):
 	if path == 0:
 		# Left is packed, right is loose
@@ -187,7 +315,8 @@ def changePathTexture(path):
 	elif path == 1:
 		# Right is packed, left is loose
 		return None
-def curvePath():
+
+def curvePath(path):
 	if path == 0:
 		# Left is curved, right is straight
 		return None

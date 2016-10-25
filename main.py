@@ -14,136 +14,35 @@ import vizshape
 import vizfx
 import vizact
 from random import randint, sample
+import forktest
 
-
-
-viz.go()
-
-#set graphical parameters
-viz.setMultiSample(4)
-viz.fov(50)
-viz.go()
-
-# this section is really just so I can walk around like it's a computer game
-###########################
-import vizcam
-viz.cam.setHandler(vizcam.KeyboardCamera(forward='w',backward='s', left='a',right='d',turnRight='e',turnLeft='q'))
-view = viz.MainView
-
-def mousemove(e):
-	euler = view.get(viz.HEAD_EULER)
-	euler[0] += e.dx*0.1
-	euler[1] += -e.dy*0.1
-	euler[1] = viz.clamp(euler[1],-90.0,90.0)
-	euler[2] = 0
-	view.setEuler(euler,viz.HEAD_ORI)
-
-viz.callback(viz.MOUSE_MOVE_EVENT,mousemove)
-###################################################
-viz.MainView.setPosition([-12, 2, 0])
-
-#load textures
-t1 = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
-grass = viz.addTexture('images/tile_grass.jpg', wrap=viz.REPEAT)
-
-# Add white point light 
-light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
-
-# Add ground
-ground = viz.addChild('ground.osgb')
-ground.texture(grass)
-
-#Set fog color to gray 
-viz.fogcolor(0.5,0.5,0.5) 
-
-#Use linear fog that start from 1 meter in front of the user 
-#And at 10 meters in front of the user 
-viz.fog(2,20)
-
-# initialize first plane
-planeL=vizshape.addBox([50,2,6])
-planeL.setPosition([6.0, 0, 6])
-planeL.texture(t1)
-
-# initialize second plane
-planeR=vizshape.addBox([50,2,6])
-planeR.setPosition([6.0, 0, -6])
-planeR.texture(t1)
-
-# initialize starting plane
-planeS = vizshape.addBox([10,2,6])
-planeS.setPosition([-10,0,0])
-
-#sky = viz.add(viz.ENVIRONMENT_MAP,'sky.jpg')
-
-#skybox = viz.add('skydome.dlc')
-#skybox.texture(sky)
-
-inLDoor = False
-inRDoor = False
-
-#Create proximity manager 
-manager = vizproximity.Manager()
-
-# Proximity sensor
-lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(16,1.5,6))
-rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(16,1.5,-6))
-
-# Add main viewpoint as proximity target 
-target = vizproximity.Target(viz.MainView)
-manager.addTarget(target)
-
-# Add collision
-viz.collision(viz.ON)
-
-# Add destination sensors to manager
-manager.addSensor(lDoorSensor)
-manager.addSensor(rDoorSensor)
-
-# Toggle debug shapes with keypress 
-vizact.onkeydown('l',manager.setDebug,viz.TOGGLE)
+if __name__ == '__main__':
+	forktest.loadscene()
 
 # Proximity callback function that records if the user has entered the proximity of an avatar.  
-# Entering avatar proximity indicates the user did not avoid the avatar and sets the corresponding  
+# Entering avatar proxim	ity indicates the user did not avoid the avatar and sets the corresponding  
 # trial variable to False   
-def enterProximity(event):
-	"""@args vizproximity.ProximityEvent()"""
-	global inLDoor, inRDoor
-	if event.sensor == lDoorSensor:
-		inLDoor = True
-		viz.MainView.setPosition([-9, 2, 0])
-		changePathWidth(1)
-		#setPathConditions()
-	elif event.sensor == rDoorSensor:
-		inRDoor = True
-		viz.MainView.setPosition([-9, 2, 0])
-		setPathConditions()
 		
 def setPathConditions():
-	global planeL
-	global planeR
 	
 	# Clear planeL and planeR
 	planeL.remove()
 	planeR.remove()
 	
-	pathcond = sample(xrange(5),2)
+	pathcond = sample(xrange(3),2)
 	for i in pathcond:
 		if i == 0:
+			# change width of path
 			pathgen = randint(0,5)
 			changePathWidth(pathgen)
 		elif i == 1:
+			# change incline of path
 			pathgen = randint(0,5)
 			inclinePath(pathgen)
 		elif i == 2:
-			pathgen = randint(0,1)
-			setPathFriction(pathgen)
-		elif i == 3:
-			pathgen = randint(0,1)
+			# change texture of 
+			pathgen = randint(0,7)
 			changePathTexture(pathgen)
-		elif i == 4:
-			pathgen = randint(0,1)
-			curvePath(pathgen)
 			
 def changePathWidth(path):
 	global planeL
@@ -324,7 +223,7 @@ def curvePath(path):
 		# Left is straight, right is curved
 		return None
 
-manager.onEnter(None,enterProximity)
+
 
 ''' Path considerations
 Width conditions (mutually exclusive):

@@ -18,6 +18,8 @@ import main
 
 
 def loadscene(wid, tex):
+	print 'width = ' + str(wid)
+	print 'texture = ' + str(tex)
 	# take genwid as the parameter for width of path, and gentex as the parameter for the texture
 	viz.go()
 
@@ -125,26 +127,57 @@ def loadscene(wid, tex):
 	#change the origin and where door will rotate
 	doorL.center(0.5,0,0)
 	doorR.center(0.5,0,0)
-
-	#Width conditions (mutually exclusive):
-	#path width - L0.5x, R1x; L1x, R0.5x; L2x, R1x; L1x, R2x; L0.5x, R2x; L2x, R0.5x
+	'''
+	Width conditions:
+	0. L0.5x, R1x 
+	1. L1x, R0.5x
+	2. L2x, R1x
+	3. L1x, R2x
+	4. L0.5x, R2x
+	5. L2x, R0.5x
 	#6 possibilities
-
+	'''
 	# initialize first plane
 	if (wid == 0) or (wid == 4):
-		planeL = vizshape.addBox([45,0.6,3])
+		planeL = vizshape.addBox([45,0.5,2])
 	if (wid == 2) or (wid == 5):
-		planeL = vizshape.addBox([45, 0.5, 12])
-	else:
+		planeL = vizshape.addBox([45, 0.5, 8])
+	elif (wid == 1) or (wid == 3) or (wid == 6):
 		planeL=vizshape.addBox([45,0.5,6])
 	planeL.setPosition([2.5, 0, 6])
-	planeL.texture(gravel)
 
 	# initialize second plane
-	planeR=vizshape.addBox([45,0.5,6])
+	if (wid == 1) or (wid == 5):
+		planeR = vizshape.addBox([45,0.5,3])
+	if (wid == 3) or (wid == 4):
+		planeR = vizshape.addBox([45, 0.5, 8])
+	elif (wid == 0) or (wid == 2) or (wid == 6):
+		planeR=vizshape.addBox([45,0.5,6])
 	planeR.setPosition([2.5, 0, -6])
-	planeR.texture(gravel)
-
+	
+	'''
+	#texture conditions
+	0. Lrubber, Rstone
+	1. Lstone, Rrubber
+	2. Lrubber, Rgravel
+	3. Lgravel, Rrubber
+	4. Lstone, Rgravel
+	5. Lgravel, Rstone;
+	'''
+	if (tex == 0) or (tex == 2):
+		planeL.texture(rubber)
+	if (tex == 1) or (tex == 4):
+		planeL.texture(stone)
+	elif (tex == 3) or (tex == 5):
+		planeL.texture(gravel)
+		
+	if (tex == 0) or (tex == 5):
+		planeR.texture(stone)
+	if (tex == 1) or (tex == 3):
+		planeR.texture(rubber)
+	if (tex == 4) or (tex == 2):
+		planeR.texture(gravel)
+	
 	# initialize starting plane
 	planeS = vizshape.addBox([10,0.5,6])
 	planeS.setPosition([-10,0,0])
@@ -208,11 +241,15 @@ def enterProximity(event):
 	global inLDoor, inRDoor
 	if event.sensor == lDoorSensor:
 		inLDoor = True
-		viz.MainView.setPosition([-9, 2, 0])
 		#changePathWidth(1)
-		main.setPathConditions()
+		children = viz.MainScene.getChildren()
+		for child in children:
+			child.remove()
+		main.run_initPathConditions()
 		
 	elif event.sensor == rDoorSensor:
 		inRDoor = True
-		viz.MainView.setPosition([-9, 2, 0])
-		main.setPathConditions()
+		children = viz.MainScene.getChildren()
+		for child in children:
+			child.remove()
+		main.run_initPathConditions()

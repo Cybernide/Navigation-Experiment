@@ -14,101 +14,35 @@ import vizshape
 import vizfx
 import vizact
 from random import randint, sample
-import forktest
+import widtex
 
 if __name__ == '__main__':
-	forktest.loadscene()
-
-# Proximity callback function that records if the user has entered the proximity of an avatar.  
-# Entering avatar proxim	ity indicates the user did not avoid the avatar and sets the corresponding  
-# trial variable to False   
+	widtex.loadscene(6,6)
 		
-def setPathConditions():
-	
-	# Clear planeL and planeR
-	planeL.remove()
-	planeR.remove()
+def run_initPathConditions():
 	
 	pathcond = sample(xrange(3),2)
-	for i in pathcond:
-		if i == 0:
-			# change width of path
-			pathgen = randint(0,5)
-			changePathWidth(pathgen)
-		elif i == 1:
-			# change incline of path
-			pathgen = randint(0,5)
-			inclinePath(pathgen)
-		elif i == 2:
-			# change texture of 
-			pathgen = randint(0,7)
-			changePathTexture(pathgen)
-			
-def changePathWidth(path):
-	global planeL
-	global planeR
-	
-	# Clear planeL and planeR
-	
-	if path == 0:
-		# Left is narrow
-		planeL=vizshape.addBox([50,2,3])
-		planeL.setPosition([6, 0, 4.5])
-		planeL.texture(t1)
-		# Right is baseline
-		planeR=vizshape.addBox([50,2,6])
-		planeR.setPosition([6.0, 0, -6])
-		planeR.texture(t1)		
-		
-	elif path == 1:
-		# Left is baseline, right is narrow
-		planeL=vizshape.addBox([50,2,6])
-		planeL.setPosition([6.0, 0, 6])
-		planeL.texture(t1)
-		# right is narrow
-		planeR=vizshape.addBox([50,2,3])
-		planeR.setPosition([6, 0, -4.5])
-		planeR.texture(t1)
-		
-	elif path == 2:
-		# Left is wide, 
-		planeL=vizshape.addBox([50,2,12])
-		planeL.setPosition([6.0, 0, 9])
-		planeL.texture(t1)
-		# right is baseline
-		planeR=vizshape.addBox([50,2,6])
-		planeR.setPosition([6.0, 0, -6])
-		planeR.texture(t1)
-		
-	elif path == 3:
-		# Left is baseline,
-		planeL=vizshape.addBox([50,2,6])
-		planeL.setPosition([6.0, 0, 6])
-		planeL.texture(t1)
-		#right is wide
-		planeR=vizshape.addBox([50,2,12])
-		planeR.setPosition([6.0, 0, -9])
-		planeR.texture(t1)
-		
-	elif path == 4:
-		# Left is narrow
-		planeL=vizshape.addBox([50,2,3])
-		planeL.setPosition([6, 0, 4.5])
-		planeL.texture(t1)
-		# Right is wide
-		planeR=vizshape.addBox([50,2,12])
-		planeR.setPosition([6, 0, -9])
-		planeR.texture(t1)
-		
-	elif path == 5:
-		# Left is wide, 
-		planeL=vizshape.addBox([50,2,12])
-		planeL.setPosition([6, 0, 9])
-		planeL.texture(t1)
-		# right is narrow
-		planeR=vizshape.addBox([50,2,3])
-		planeR.setPosition([6, 0, -4.5])
-		planeR.texture(t1)
+#	for i in pathcond:
+#		if i == 0:
+#			pathgen = randint(0,5)
+#			changePathWidth(pathgen)
+#		elif i == 1:
+#			pathgen = randint(0,5)
+#			inclinePath(pathgen)
+#		elif i == 2:
+#			pathgen = randint(0,5)
+#			setPathTexture(pathgen)
+	genwid = randint(0,5)
+	gentex = randint(0,5)
+	widtex.loadscene(genwid, gentex)
+#	if (0 in pathcond) and (2 in pathcond):
+#		genwid = randint(0,5)
+#		gentex = randint(0,5)
+#		widtex.loadscene(genwid, gentex)
+#	else:
+#		widtex.loadscene(6, 6)
+#		print 'IMPLEMENT ME!'
+'''	
 
 def inclinePath(path):
 	global planeL
@@ -223,7 +157,7 @@ def curvePath(path):
 		# Left is straight, right is curved
 		return None
 
-
+'''
 
 ''' Path considerations
 Width conditions (mutually exclusive):
@@ -245,6 +179,9 @@ texture -- Lpacked, Rloose; Lloose, Rpacked
 Path conditions 
 curve -- Lcurved, Rstraight; Lstraight, Rcurved
 2 possibilities
+
+Updated texture
+texture -- Lrubber, Rstone; Lstone, Rrubber; Lrubber, Rgravel; Lgravel, Rrubber; Lstone, Rgravel; Rgravel, Lstone;
 
 '''
 

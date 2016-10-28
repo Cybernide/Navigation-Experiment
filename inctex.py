@@ -18,8 +18,8 @@ import main
 import vizmat
 
 
-def loadscene(wid, tex):
-	print 'width = ' + str(wid)
+def loadscene(inc, tex):
+	print 'width = ' + str(inc)
 	print 'texture = ' + str(tex)
 	# take genwid as the parameter for width of path, and gentex as the parameter for the texture
 	viz.go()
@@ -155,41 +155,27 @@ def loadscene(wid, tex):
 	'''
 	# initialize first plane
 	
+	planeL=vizshape.addBox([40,0.5,6])
+	planeR=vizshape.addBox([40,0.5,6])
 	
-	if (wid == 0) or (wid == 4):
-		planeL = vizshape.addBox([40,0.5,2])
-		texMplaneL = vizmat.Transform()
-		texMplaneL.setScale( [1*20,1,1] )
-		planeL.texmat(texMplaneL)
-	if (wid == 2) or (wid == 5):
-		planeL = vizshape.addBox([40, 0.5, 8])
-		texMplaneL = vizmat.Transform()
-		texMplaneL.setScale( [1*5,1,1] )
-		planeL.texmat(texMplaneL)
-	elif (wid == 1) or (wid == 3) or (wid == 6):
-		planeL=vizshape.addBox([40,0.5,6])
-		texMplaneL = vizmat.Transform()
-		texMplaneL.setScale( [1*6.5,1,1] )
-		planeL.texmat(texMplaneL)
-	planeL.setPosition([2.5, 0, 6])
-
+	if (inc == 0) or (inc == 4):
+		planeL.setEuler([0,0,-20])
+		planeL.setPosition([2.5, 0, 6])
+	if (inc == 2) or (inc == 5):
+		planeL.setEuler([0,0,20])
+		planeL.setPosition([2.5, 0, 6])
+	elif (inc == 1) or (inc == 3) or (inc == 6):
+		planeL.setPosition([2.5, 0, 6])
+	
 	# initialize second plane
-	if (wid == 1) or (wid == 5):
-		planeR = vizshape.addBox([40,0.5,3])
-		texMplaneR = vizmat.Transform()
-		texMplaneR.setScale( [1*20,1,1] )
-		planeR.texmat(texMplaneR)
-	if (wid == 3) or (wid == 4):
-		planeR = vizshape.addBox([40, 0.5, 8])
-		texMplaneR = vizmat.Transform()
-		texMplaneR.setScale( [1*5,1,1] )
-		planeR.texmat(texMplaneR)
-	elif (wid == 0) or (wid == 2) or (wid == 6):
-		planeR=vizshape.addBox([40,0.5,6])
-		texMplaneR = vizmat.Transform()
-		texMplaneR.setScale( [1*6.5,1,1] )
-		planeR.texmat(texMplaneR)
-	planeR.setPosition([2.5, 0, -6])
+	if (inc == 1) or (inc == 5):
+		planeR.setEuler([0,0,-20])
+		planeR.setPosition([2.5, 0, 6])
+	if (inc == 3) or (inc == 4):
+		planeR.setEuler([0,0,-20])
+		planeR.setPosition([2.5, 0, 6])
+	elif (inc == 0) or (inc == 2) or (inc == 6):
+		planeL.setPosition([2.5, 0, 6])
 	
 	'''
 	#texture conditions
@@ -215,33 +201,37 @@ def loadscene(wid, tex):
 		planeR.texture(gravel)
 	
 	# initialize starting plane
-	if wid == 0:
-		planeS = vizshape.addBox([10,0.5,8])
-		planeS.setPosition([-10,0,1.0])
-	if wid == 1:
-		planeS = vizshape.addBox([5,0.5,7.5])
-		planeS.setPosition([-15,0,-0.75])
-	if wid == 2:
-		planeS = vizshape.addBox([5,0.5,5])
-		planeS.setPosition([-15,0,-0.5])
-	if wid == 3:
-		planeS = vizshape.addBox([5,0.5,5])
-		planeS.setPosition([-15,0,0.5])
-	if wid == 4:
-		planeS = vizshape.addBox([5,0.5,7])
-		planeS.setPosition([-15,0,1.5])
-	if wid == 5:
-		planeS = vizshape.addBox([5,0.5,6.5])
-		planeS.setPosition([-15,0,-1.25])
-	elif wid == 6:
-		planeS = vizshape.addBox([5,0.5,6])
-		planeS.setPosition([-15,0,0])
+#	if wid == 0:
+#		planeS = vizshape.addBox([10,0.5,8])
+#		planeS.setPosition([-10,0,1.0])
+#	if wid == 1:
+#		planeS = vizshape.addBox([5,0.5,7.5])
+#		planeS.setPosition([-15,0,-0.75])
+#	if wid == 2:
+#		planeS = vizshape.addBox([5,0.5,5])
+#		planeS.setPosition([-15,0,-0.5])
+#	if wid == 3:
+#		planeS = vizshape.addBox([5,0.5,5])
+#		planeS.setPosition([-15,0,0.5])
+#	if wid == 4:
+#		planeS = vizshape.addBox([5,0.5,7])
+#		planeS.setPosition([-15,0,1.5])
+#	if wid == 5:
+#		planeS = vizshape.addBox([5,0.5,6.5])
+#		planeS.setPosition([-15,0,-1.25])
+#	elif wid == 6:
+#		planeS = vizshape.addBox([5,0.5,6])
+#		planeS.setPosition([-15,0,0])
+		
+	planeS = vizshape.addBox([5,0.5,6])
+	planeS.setPosition([-15,0,0])
 	
 	global inLDoor, inRDoor, nearLDoor, nearRDoor
 	inLDoor = False
 	inRDoor = False
 	nearLDoor = False
 	nearRDoor = False
+	
 	#Create proximity manager 
 	manager = vizproximity.Manager()
 	autodoor = vizproximity.Manager()

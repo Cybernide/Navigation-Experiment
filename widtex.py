@@ -27,6 +27,8 @@ def loadscene(wid, tex):
 	viz.setMultiSample(4)
 	viz.fov(50)
 	viz.go()
+	# Add collision
+	#viz.collision(viz.ON)
 
 	# this section is really just so I can walk around like it's a computer game
 	###########################
@@ -91,38 +93,42 @@ def loadscene(wid, tex):
 	ceiling.texture(metal)
 
 	#destination point
-	wallF = vizshape.addBox([10,0.5,20])
-	wallF.setPosition(30,0,0)
+	wallTF = vizshape.addBox([25,0.5,25])
+	wallTF.setPosition(35,0,0)
 	
-	wallTT = vizshape.addBox([15,6,25])
+	wallTT = vizshape.addBox([25,6,25])
 	wallTT.setEuler(0,0,0)
-	wallTT.setPosition(32.5,7,0)
+	wallTT.setPosition(35,7,0)
 	wallTT.texture(metal)
 	
-	wallTl = vizshape.addBox([0.25,8,3])
+	wallTl = vizshape.addBox([0.25,7.5,3])
 	wallTl.setEuler(0,0,0)
-	wallTl.setPosition(25.25,0.5,8.75)
+	wallTl.setPosition(22.75,0.5,8.75)
 	wallTl.texture(tile)
 	
-	wallTr = vizshape.addBox([0.25,8,3])
+	wallTr = vizshape.addBox([0.25,7.5,3])
 	wallTr.setEuler(0,0,0)
-	wallTr.setPosition(25.25,0.5,-8.75)	
+	wallTr.setPosition(22.75,0.5,-8.75)	
 	wallTr.texture(tile)
 	
-	wallTc = vizshape.addBox([0.25,8,9.5])
+	wallTc = vizshape.addBox([0.25,7.5,9.5])
 	wallTc.setEuler(0,0,0)
-	wallTc.setPosition(25.25,0.5,0.0)
+	wallTc.setPosition(22.75,0.5,0.0)
 	wallTc.texture(tile)
+	
+	wallTb = vizshape.addPlane([20,4])
+	wallTb.setPosition(40, 2, 0)
+	wallTb.setEuler(x=90, y=270, z=0)
 	
 	global doorL, doorR
 	
 	doorL = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorL.setEuler(90,0,0)
-	doorL.setPosition(24.75,2.0,4.75)
+	doorL.setPosition(22.5,2.0,4.75)
 	
 	doorR = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorR.setEuler(90,0,0)
-	doorR.setPosition(24.75,2.0,-7.25)
+	doorR.setPosition(22.5,2.0,-7.25)
 
 	#change the origin and where door will rotate
 	doorL.center(0.5,0,0)
@@ -208,8 +214,7 @@ def loadscene(wid, tex):
 	manager.addTarget(target)
 	autodoor.addTarget(target)
 
-	# Add collision
-	viz.collision(viz.ON)
+	
 
 	# Add destination sensors to manager
 	manager.addSensor(lDoorSensor)

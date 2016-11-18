@@ -14,10 +14,10 @@ import vizshape
 import vizfx
 import vizact
 from random import randint, sample
-import widtex
+import widtex, inctex
 
 if __name__ == '__main__':
-	widtex.loadscene(6,6)
+	inctex.loadscene(4,6)
 		
 def run_initPathConditions():
 	
@@ -32,9 +32,10 @@ def run_initPathConditions():
 #		elif i == 2:
 #			pathgen = randint(0,5)
 #			setPathTexture(pathgen)
-	genwid = randint(0,5)
+	geninc = randint(0,5)
 	gentex = randint(0,5)
-	widtex.loadscene(genwid, gentex)
+	inctex.loadscene(geninc, gentex)
+	#widtex.loadscene(genwid, gentex)
 #	if (0 in pathcond) and (2 in pathcond):
 #		genwid = randint(0,5)
 #		gentex = randint(0,5)

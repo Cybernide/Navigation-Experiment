@@ -19,7 +19,7 @@ import vizmat
 
 
 def loadscene(inc, tex):
-	print 'width = ' + str(inc)
+	print 'incline = ' + str(inc)
 	print 'texture = ' + str(tex)
 	# take genwid as the parameter for width of path, and gentex as the parameter for the texture
 	viz.go()
@@ -48,7 +48,7 @@ def loadscene(inc, tex):
 	viz.callback(viz.MOUSE_MOVE_EVENT,mousemove)
 	###################################################
 
-	viz.MainView.setPosition([-12, 2, 0])
+	viz.MainView.setPosition([-20, 2, 0])
 
 	#load textures
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
@@ -78,7 +78,7 @@ def loadscene(inc, tex):
 	wallL.texture(metal)
 
 	wallB = vizshape.addPlane([25, 30])
-	wallB.setPosition(-20, 0, 0)
+	wallB.setPosition(-22.25, 0, 0)
 	wallB.setEuler(x=90, y=90, z=0)
 	wallB.texture(metal)
 	
@@ -87,62 +87,19 @@ def loadscene(inc, tex):
 	ceiling.setPosition(15,10, 0)
 	ceiling.texture(metal)
 
-	#destination point
-	texMwallTlr = vizmat.Transform()
-	texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
-	
-	texMwallTc = vizmat.Transform()
-	texMwallTc.setScale( [1,1,1.3] )
-	
-	tile.wrap(viz.WRAP_T, viz.REPEAT)
-	tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-	wallTF = vizshape.addBox([25,0.5,25])
-	wallTF.setPosition(35,0,0)
-	
-	wallTT = vizshape.addBox([25,6,25])
-	wallTT.setEuler(0,0,0)
-	wallTT.setPosition(35,7,0)
-	wallTT.texture(metal)
-	
-	wallTl = vizshape.addBox([0.25,7.5,3])
-	wallTl.setEuler(0,0,0)
-	wallTl.setPosition(22.75,0.5,8.75)
-	wallTl.texmat(texMwallTlr)
-	wallTl.texture(tile)
-	
-	wallTr = vizshape.addBox([0.25,7.5,3])
-	wallTr.setEuler(0,0,0)
-	wallTr.setPosition(22.75,0.5,-8.75)	
-	wallTr.texmat(texMwallTlr)
-	wallTr.texture(tile)
-	
-	tile.wrap(viz.WRAP_T, viz.REPEAT)
-	tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-	wallTc = vizshape.addBox([0.25,7.5,9.5])
-	wallTc.setEuler(0,0,0)
-	wallTc.setPosition(22.75,0.5,0.0)
-	wallTc.texmat(texMwallTc)
-	wallTc.texture(tile)
-	
-	wallTb = vizshape.addPlane([20,4])
-	wallTb.setPosition(40, 2, 0)
-	wallTb.setEuler(x=90, y=270, z=0)
-	
 	global doorL, doorR
-	
 	doorL = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorL.setEuler(90,0,0)
-	doorL.setPosition(22.5,2.0,4.75)
-	
+	doorL.setPosition(22.5,-20,4.75)
+		
 	doorR = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorR.setEuler(90,0,0)
-	doorR.setPosition(22.5,2.0,-7.25)
-
-	#change the origin and where door will rotate
+	
+		
 	doorL.center(0.5,0,0)
 	doorR.center(0.5,0,0)
+	
+	
 	'''
 	Width conditions:
 	0. L0.5x, R1x 
@@ -160,7 +117,7 @@ def loadscene(inc, tex):
 	
 	if (inc == 0) or (inc == 4):
 		planeL.setEuler([0,0,-20])
-		planeL.setPosition([2.5, 0, 6])
+		planeL.setPosition([1.25, -7.0, 6])
 	if (inc == 2) or (inc == 5):
 		planeL.setEuler([0,0,20])
 		planeL.setPosition([2.5, 0, 6])
@@ -170,12 +127,12 @@ def loadscene(inc, tex):
 	# initialize second plane
 	if (inc == 1) or (inc == 5):
 		planeR.setEuler([0,0,-20])
-		planeR.setPosition([2.5, 0, 6])
+		planeR.setPosition([1.25, -7.0, -6])
 	if (inc == 3) or (inc == 4):
-		planeR.setEuler([0,0,-20])
-		planeR.setPosition([2.5, 0, 6])
+		planeR.setEuler([0,0,20])
+		planeR.setPosition([2.5, 0, -6])
 	elif (inc == 0) or (inc == 2) or (inc == 6):
-		planeL.setPosition([2.5, 0, 6])
+		planeR.setPosition([2.5, 0, -6])
 	
 	'''
 	#texture conditions
@@ -201,30 +158,352 @@ def loadscene(inc, tex):
 		planeR.texture(gravel)
 	
 	# initialize starting plane
-#	if wid == 0:
-#		planeS = vizshape.addBox([10,0.5,8])
-#		planeS.setPosition([-10,0,1.0])
-#	if wid == 1:
-#		planeS = vizshape.addBox([5,0.5,7.5])
-#		planeS.setPosition([-15,0,-0.75])
-#	if wid == 2:
-#		planeS = vizshape.addBox([5,0.5,5])
-#		planeS.setPosition([-15,0,-0.5])
-#	if wid == 3:
-#		planeS = vizshape.addBox([5,0.5,5])
-#		planeS.setPosition([-15,0,0.5])
-#	if wid == 4:
-#		planeS = vizshape.addBox([5,0.5,7])
-#		planeS.setPosition([-15,0,1.5])
-#	if wid == 5:
-#		planeS = vizshape.addBox([5,0.5,6.5])
-#		planeS.setPosition([-15,0,-1.25])
-#	elif wid == 6:
-#		planeS = vizshape.addBox([5,0.5,6])
-#		planeS.setPosition([-15,0,0])
+	if inc == 0:
+		#destination point
+		planeL.setPosition([1.25, -7.0, 6])
+		planeR.setPosition([2.5, 0, -6])
 		
-	planeS = vizshape.addBox([5,0.5,6])
-	planeS.setPosition([-15,0,0])
+		texMwallTlr = vizmat.Transform()
+		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
+	
+		texMwallTc = vizmat.Transform()
+		texMwallTc.setScale( [1,1,1.3] )
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTF1 = vizshape.addBox([25,0.5,25])
+		wallTF1.setPosition(35,0,0)
+		wallTF2 = vizshape.addBox([25,0.5,25])
+		wallTF2.setPosition(35,-13.25,0)
+	
+		wallTT = vizshape.addBox([25,6,25])
+		wallTT.setEuler(0,0,0)
+		wallTT.setPosition(35,7,0)
+		wallTT.texture(metal)
+	
+		wallTl = vizshape.addBox([0.25,4,15])
+		wallTl.setEuler(0,0,0)
+		wallTl.setPosition(22.75,2,2.5)
+		wallTl.texmat(texMwallTlr)
+		wallTl.texture(tile)
+	
+		wallTTr = vizshape.addBox([0.25,4,3])
+		wallTTr.setEuler(0,0,0)
+		wallTTr.setPosition(22.75,2.25,-8.75)	
+		wallTTr.texmat(texMwallTlr)
+		wallTTr.texture(tile)
+		
+		wallTBl = vizshape.addBox([0.25,4,3])
+		wallTBl.setEuler(0,0,0)
+		wallTBl.setPosition(22.75,-11.25,8.75)	
+		wallTBl.texmat(texMwallTlr)
+		wallTBl.texture(tile)
+		
+		wallTBr = vizshape.addBox([0.25,4,15])
+		wallTBr.setEuler(0,0,0)
+		wallTBr.setPosition(22.75,-11.25,-2.75)
+		wallTBr.texmat(texMwallTlr)
+		wallTBr.texture(tile)
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTc = vizshape.addBox([0.25,9,20])
+		wallTc.setEuler(0,0,0)
+		wallTc.setPosition(22.75,-4.75,0.0)
+		wallTc.texmat(texMwallTc)
+		wallTc.texture(tile)
+	
+		wallTb = vizshape.addPlane([20,4])
+		wallTb.setPosition(40, 2, 0)
+		wallTb.setEuler(x=90, y=270, z=0)
+		
+		ground.setPosition([0, -13.5, 0])
+		planeS = vizshape.addBox([5,0.5,18])
+		planeS.setPosition([-20,0,0])
+		
+		doorL.setPosition(22.5,-11.25,4.75)
+		doorR.setPosition(22.5,2.0,-7.25)
+
+		#change the origin and where door will rotate
+		
+	if inc == 1:
+		
+		planeL.setPosition([2.5, 0, 6])
+		planeR.setPosition([1.25, -7.0, -6])
+		
+		texMwallTlr = vizmat.Transform()
+		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
+	
+		texMwallTc = vizmat.Transform()
+		texMwallTc.setScale( [1,1,1.3] )
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTF1 = vizshape.addBox([25,0.5,25])
+		wallTF1.setPosition(35,0,0)
+		wallTF2 = vizshape.addBox([25,0.5,25])
+		wallTF2.setPosition(35,-13.25,0)
+	
+		wallTT = vizshape.addBox([25,6,25])
+		wallTT.setEuler(0,0,0)
+		wallTT.setPosition(35,7,0)
+		wallTT.texture(metal)
+	
+		wallTBl = vizshape.addBox([0.25,4,15])
+		wallTBl.setEuler(0,0,0)
+		wallTBl.setPosition(22.75,-11.25,2.5)
+		wallTBl.texmat(texMwallTlr)
+		wallTBl.texture(tile)
+	
+		wallTBr = vizshape.addBox([0.25,4,3])
+		wallTBr.setEuler(0,0,0)
+		wallTBr.setPosition(22.75,-11.25,-8.75)	
+		wallTBr.texmat(texMwallTlr)
+		wallTBr.texture(tile)
+		
+		wallTl = vizshape.addBox([0.25,4,3])
+		wallTl.setEuler(0,0,0)
+		wallTl.setPosition(22.75,2.25,8.75)	
+		wallTl.texmat(texMwallTlr)
+		wallTl.texture(tile)
+		
+		wallTr = vizshape.addBox([0.25,4,15])
+		wallTr.setEuler(0,0,0)
+		wallTr.setPosition(22.75,2.25,-2.75)
+		wallTr.texmat(texMwallTlr)
+		wallTr.texture(tile)
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTc = vizshape.addBox([0.25,9,20])
+		wallTc.setEuler(0,0,0)
+		wallTc.setPosition(22.75,-4.75,0.0)
+		wallTc.texmat(texMwallTc)
+		wallTc.texture(tile)
+	
+		wallTb = vizshape.addPlane([20,4])
+		wallTb.setPosition(40, 2, 0)
+		wallTb.setEuler(x=90, y=270, z=0)
+		
+		ground.setPosition([0, -13.5, 0])
+		planeS = vizshape.addBox([5,0.5,18])
+		planeS.setPosition([-20,0,0])
+		
+		doorL.setPosition(22.5,2.0,4.75)
+		doorR.setPosition(22.5,-11.25,-7.25)
+		
+		
+	if inc == 2:
+		planeL.setPosition([3.75, -7.0, 6])
+		planeR.setPosition([2.5, -13.5, -6])
+		
+		texMwallTlr = vizmat.Transform()
+		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
+	
+		texMwallTc = vizmat.Transform()
+		texMwallTc.setScale( [1,1,1.3] )
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTF1 = vizshape.addBox([25,0.5,25])
+		wallTF1.setPosition(35,0,0)
+		wallTF2 = vizshape.addBox([25,0.5,25])
+		wallTF2.setPosition(35,-13.25,0)
+	
+		wallTT = vizshape.addBox([25,6,25])
+		wallTT.setEuler(0,0,0)
+		wallTT.setPosition(35,7,0)
+		wallTT.texture(metal)
+	
+		wallTBl = vizshape.addBox([0.25,4,15])
+		wallTBl.setEuler(0,0,0)
+		wallTBl.setPosition(22.75,-11.25,2.5)
+		wallTBl.texmat(texMwallTlr)
+		wallTBl.texture(tile)
+	
+		wallTBr = vizshape.addBox([0.25,4,3])
+		wallTBr.setEuler(0,0,0)
+		wallTBr.setPosition(22.75,-11.25,-8.75)	
+		wallTBr.texmat(texMwallTlr)
+		wallTBr.texture(tile)
+		
+		wallTl = vizshape.addBox([0.25,4,3])
+		wallTl.setEuler(0,0,0)
+		wallTl.setPosition(22.75,2.25,8.75)	
+		wallTl.texmat(texMwallTlr)
+		wallTl.texture(tile)
+		
+		wallTr = vizshape.addBox([0.25,4,15])
+		wallTr.setEuler(0,0,0)
+		wallTr.setPosition(22.75,2.25,-2.75)
+		wallTr.texmat(texMwallTlr)
+		wallTr.texture(tile)
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTc = vizshape.addBox([0.25,9,20])
+		wallTc.setEuler(0,0,0)
+		wallTc.setPosition(22.75,-4.75,0.0)
+		wallTc.texmat(texMwallTc)
+		wallTc.texture(tile)
+	
+		wallTb = vizshape.addPlane([20,4])
+		wallTb.setPosition(40, 2, 0)
+		wallTb.setEuler(x=90, y=270, z=0)
+		
+		ground.setPosition([0, -13.5, 0])
+		planeS = vizshape.addBox([5,0.5,18])
+		planeS.setPosition([-20,-13.25,0])
+		
+		doorL.setPosition(22.5,2.0,4.75)
+		doorR.setPosition(22.5,-11.25,-7.25)
+	if inc == 3:
+
+		planeL.setPosition([2.5, -13.5, 6])
+		planeR.setPosition([3.75, -7.0, -6])
+		
+		texMwallTlr = vizmat.Transform()
+		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
+	
+		texMwallTc = vizmat.Transform()
+		texMwallTc.setScale( [1,1,1.3] )
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTF1 = vizshape.addBox([25,0.5,25])
+		wallTF1.setPosition(35,0,0)
+		wallTF2 = vizshape.addBox([25,0.5,25])
+		wallTF2.setPosition(35,-13.25,0)
+	
+		wallTT = vizshape.addBox([25,6,25])
+		wallTT.setEuler(0,0,0)
+		wallTT.setPosition(35,7,0)
+		wallTT.texture(metal)
+	
+		wallTl = vizshape.addBox([0.25,4,15])
+		wallTl.setEuler(0,0,0)
+		wallTl.setPosition(22.75,2,2.5)
+		wallTl.texmat(texMwallTlr)
+		wallTl.texture(tile)
+	
+		wallTTr = vizshape.addBox([0.25,4,3])
+		wallTTr.setEuler(0,0,0)
+		wallTTr.setPosition(22.75,2.25,-8.75)	
+		wallTTr.texmat(texMwallTlr)
+		wallTTr.texture(tile)
+		
+		wallTBl = vizshape.addBox([0.25,4,3])
+		wallTBl.setEuler(0,0,0)
+		wallTBl.setPosition(22.75,-11.25,8.75)	
+		wallTBl.texmat(texMwallTlr)
+		wallTBl.texture(tile)
+		
+		wallTBr = vizshape.addBox([0.25,4,15])
+		wallTBr.setEuler(0,0,0)
+		wallTBr.setPosition(22.75,-11.25,-2.75)
+		wallTBr.texmat(texMwallTlr)
+		wallTBr.texture(tile)
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTc = vizshape.addBox([0.25,9,20])
+		wallTc.setEuler(0,0,0)
+		wallTc.setPosition(22.75,-4.75,0.0)
+		wallTc.texmat(texMwallTc)
+		wallTc.texture(tile)
+	
+		wallTb = vizshape.addPlane([20,4])
+		wallTb.setPosition(40, 2, 0)
+		wallTb.setEuler(x=90, y=270, z=0)
+		
+		ground.setPosition([0, -13.5, 0])
+		planeS = vizshape.addBox([5,0.5,18])
+		planeS.setPosition([-20,-13.25,0])
+		
+		doorL.setPosition(22.5,-11.25,4.75)
+		doorR.setPosition(22.5,2.0,-7.25)
+	if inc == 4:
+		planeL.setPosition([1.5, -20.0, 6])
+		planeR.setPosition([3.75, -7.0, -6])
+		
+		texMwallTlr = vizmat.Transform()
+		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
+	
+		texMwallTc = vizmat.Transform()
+		texMwallTc.setScale( [1,1,1.3] )
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTF1 = vizshape.addBox([25,0.5,25])
+		wallTF1.setPosition(35,0,0)
+		wallTF2 = vizshape.addBox([25,0.5,25])
+		wallTF2.setPosition(35,-27,0)
+	
+		wallTT = vizshape.addBox([25,6,25])
+		wallTT.setEuler(0,0,0)
+		wallTT.setPosition(35,7,0)
+		wallTT.texture(metal)
+	
+		wallTl = vizshape.addBox([0.25,4,15])
+		wallTl.setEuler(0,0,0)
+		wallTl.setPosition(22.75,2,2.5)
+		wallTl.texmat(texMwallTlr)
+		wallTl.texture(tile)
+	
+		wallTTr = vizshape.addBox([0.25,4,3])
+		wallTTr.setEuler(0,0,0)
+		wallTTr.setPosition(22.75,2.25,-8.75)	
+		wallTTr.texmat(texMwallTlr)
+		wallTTr.texture(tile)
+		
+		wallTBl = vizshape.addBox([0.25,4,3])
+		wallTBl.setEuler(0,0,0)
+		wallTBl.setPosition(22.75,-25.25,8.75)	
+		wallTBl.texmat(texMwallTlr)
+		wallTBl.texture(tile)
+		
+		wallTBr = vizshape.addBox([0.25,4,15])
+		wallTBr.setEuler(0,0,0)
+		wallTBr.setPosition(22.75,-25.25,-2.75)
+		wallTBr.texmat(texMwallTlr)
+		wallTBr.texture(tile)
+	
+		tile.wrap(viz.WRAP_T, viz.REPEAT)
+		tile.wrap(viz.WRAP_S, viz.REPEAT)
+	
+		wallTc = vizshape.addBox([0.25,23,20])
+		wallTc.setEuler(0,0,0)
+		wallTc.setPosition(22.75,-11.25,0.0)
+		wallTc.texmat(texMwallTc)
+		wallTc.texture(tile)
+	
+		wallTb = vizshape.addPlane([20,4])
+		wallTb.setPosition(40, 2, 0)
+		wallTb.setEuler(x=90, y=270, z=0)
+		
+		wallTceilB = vizshape.addBox([25,0.5,25])
+		wallTceilB.setPosition(35,-27,0)
+		
+		ground.setPosition([0, -27.0, 0])
+		planeS = vizshape.addBox([5,0.5,18])
+		planeS.setPosition([-20,-13.0,0])
+		
+		doorL.setPosition(22.5,-25.25,4.75)
+		doorR.setPosition(22.5,2.0,-7.25)
+	elif inc == 5:
+		planeS = vizshape.addBox([5,0.5,6])
+		planeS.setPosition([-15,0,0])
+		
+	
 	
 	global inLDoor, inRDoor, nearLDoor, nearRDoor
 	inLDoor = False

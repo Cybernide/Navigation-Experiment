@@ -48,7 +48,7 @@ def loadscene(wid, tex):
 	viz.callback(viz.MOUSE_MOVE_EVENT,mousemove)
 	###################################################
 
-	viz.MainView.setPosition([-12, 2, 0])
+	viz.MainView.setPosition([-20, 2, 0])
 
 	#load textures
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
@@ -78,7 +78,7 @@ def loadscene(wid, tex):
 	wallL.texture(metal)
 
 	wallB = vizshape.addPlane([25, 30])
-	wallB.setPosition(-20, 0, 0)
+	wallB.setPosition(-22.25, 0, 0)
 	wallB.setEuler(x=90, y=90, z=0)
 	wallB.texture(metal)
 	
@@ -86,8 +86,7 @@ def loadscene(wid, tex):
 	ceiling.setEuler(0, 180, 0)
 	ceiling.setPosition(15,10, 0)
 	ceiling.texture(metal)
-
-	#destination point
+	
 	texMwallTlr = vizmat.Transform()
 	texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
 	
@@ -215,27 +214,9 @@ def loadscene(wid, tex):
 		planeR.texture(gravel)
 	
 	# initialize starting plane
-	if wid == 0:
-		planeS = vizshape.addBox([10,0.5,8])
-		planeS.setPosition([-10,0,1.0])
-	if wid == 1:
-		planeS = vizshape.addBox([5,0.5,7.5])
-		planeS.setPosition([-15,0,-0.75])
-	if wid == 2:
-		planeS = vizshape.addBox([5,0.5,5])
-		planeS.setPosition([-15,0,-0.5])
-	if wid == 3:
-		planeS = vizshape.addBox([5,0.5,5])
-		planeS.setPosition([-15,0,0.5])
-	if wid == 4:
-		planeS = vizshape.addBox([5,0.5,7])
-		planeS.setPosition([-15,0,1.5])
-	if wid == 5:
-		planeS = vizshape.addBox([5,0.5,6.5])
-		planeS.setPosition([-15,0,-1.25])
-	elif wid == 6:
-		planeS = vizshape.addBox([5,0.5,6])
-		planeS.setPosition([-15,0,0])
+	
+	planeS = vizshape.addBox([5,0.5,18])
+	planeS.setPosition([-20,0,0])
 	
 	global inLDoor, inRDoor, nearLDoor, nearRDoor
 	inLDoor = False

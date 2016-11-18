@@ -17,7 +17,7 @@ from random import randint, sample
 import widtex, inctex
 
 if __name__ == '__main__':
-	inctex.loadscene(4,6)
+	inctex.loadscene(5,6)
 		
 def run_initPathConditions():
 	

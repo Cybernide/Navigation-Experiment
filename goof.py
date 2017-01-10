@@ -1,9 +1,5 @@
 ﻿"""
-This script shows how to use shader effects.
-Click a model to apply a highlight effect.
-An additional slice and extrude effect are
-applied to the logo.
-Use the config panel to adjust settings.
+This script is really just a playground for things I haven't quite gotten the hang of yet.
 """
 import viz
 import vizfx
@@ -107,20 +103,6 @@ material = vizfx.addMaterialEffect(
 
 foo.specular([0.1,0.1,0.1] ) # Make this matte
 foo.apply(material) # Apply diffuse and normal map
-
-
-# looks like this only applies to .osgb models, not .dae
-
-code = """
-Effect { 
-    Shader { 
-        BEGIN Material 
-        m.shininess = 4000.00; 
-        END 
-    } 
-}
-"""
-diffuseeffect = viz.addEffect(code)
 
 
 

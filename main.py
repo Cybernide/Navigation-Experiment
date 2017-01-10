@@ -14,10 +14,10 @@ import vizshape
 import vizfx
 import vizact
 from random import randint, sample
-import widtex, inctex
+import widtex, inctex, widinc
 
 if __name__ == '__main__':
-	inctex.loadscene(5,6)
+	widinc.loadscene(4,6)
 		
 def run_initPathConditions():
 	

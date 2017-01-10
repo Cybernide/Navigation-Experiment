@@ -162,7 +162,7 @@ def loadscene(inc, tex):
 		wallL.setEuler(x=0, y=-90, z=0)
 		wallL.texture(metal)
 		#destination point
-		planeL.setPosition([1.25, -7.0, 6])
+		planeL.setPosition([1.25, -6.8, 6])
 		planeR.setPosition([2.5, 0, -6])
 		
 		texMwallTlr = vizmat.Transform()
@@ -174,10 +174,10 @@ def loadscene(inc, tex):
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-		wallTF1 = vizshape.addBox([25,0.5,25])
-		wallTF1.setPosition(35,0,0)
-		wallTF2 = vizshape.addBox([25,0.5,25])
-		wallTF2.setPosition(35,-13.25,0)
+		floorT1 = vizshape.addBox([25,0.5,25])
+		floorT1.setPosition(35,0,0)
+		floorT2 = vizshape.addBox([25,0.5,25])
+		floorT2.setPosition(32.5,-13.75,0)
 	
 		wallTT = vizshape.addBox([25,6,25])
 		wallTT.setEuler(0,0,0)
@@ -196,22 +196,22 @@ def loadscene(inc, tex):
 		wallTTr.texmat(texMwallTlr)
 		wallTTr.texture(tile)
 		
-		wallTBl = vizshape.addBox([0.25,4,3])
+		wallTBl = vizshape.addBox([0.25,4.25,3])
 		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-11.25,8.75)	
+		wallTBl.setPosition(22.75,-11.5,8.75)	
 		wallTBl.texmat(texMwallTlr)
 		wallTBl.texture(tile)
 		
-		wallTBr = vizshape.addBox([0.25,4,15])
+		wallTBr = vizshape.addBox([0.25,4.25,15])
 		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-11.25,-2.75)
+		wallTBr.setPosition(22.75,-11.5,-2.75)
 		wallTBr.texmat(texMwallTlr)
 		wallTBr.texture(tile)
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-		wallTc = vizshape.addBox([0.25,9,20])
+		wallTc = vizshape.addBox([0.25,9.25,20])
 		wallTc.setEuler(0,0,0)
 		wallTc.setPosition(22.75,-4.75,0.0)
 		wallTc.texmat(texMwallTc)
@@ -221,11 +221,11 @@ def loadscene(inc, tex):
 		wallTb.setPosition(40, 2, 0)
 		wallTb.setEuler(x=90, y=270, z=0)
 		
-		ground.setPosition([0, -13.5, 0])
+		ground.setPosition([0, -14., 0])
 		planeS = vizshape.addBox([5,0.5,18])
 		planeS.setPosition([-20,0,0])
 		
-		doorL.setPosition(22.5,-11.25,4.75)
+		doorL.setPosition(22.5,-11.5,4.75)
 		doorR.setPosition(22.5,2.0,-7.25)
 
 		#change the origin and where door will rotate
@@ -242,7 +242,7 @@ def loadscene(inc, tex):
 		wallL.texture(metal)
 		
 		planeL.setPosition([2.5, 0, 6])
-		planeR.setPosition([1.25, -7.0, -6])
+		planeR.setPosition([1.25, -6.8, -6])
 		
 		texMwallTlr = vizmat.Transform()
 		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
@@ -253,25 +253,25 @@ def loadscene(inc, tex):
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-		wallTF1 = vizshape.addBox([25,0.5,25])
-		wallTF1.setPosition(35,0,0)
-		wallTF2 = vizshape.addBox([25,0.5,25])
-		wallTF2.setPosition(35,-13.25,0)
+		floorT1 = vizshape.addBox([25,0.5,25])
+		floorT1.setPosition(35,0,0)
+		floorT2 = vizshape.addBox([25,0.5,25])
+		floorT2.setPosition(35,-13.75,0)
 	
 		wallTT = vizshape.addBox([25,6,25])
 		wallTT.setEuler(0,0,0)
 		wallTT.setPosition(35,7,0)
 		wallTT.texture(metal)
 	
-		wallTBl = vizshape.addBox([0.25,4,15])
+		wallTBl = vizshape.addBox([0.25,4.25,15])
 		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-11.25,2.5)
+		wallTBl.setPosition(22.75,-11.5,2.5)
 		wallTBl.texmat(texMwallTlr)
 		wallTBl.texture(tile)
 	
-		wallTBr = vizshape.addBox([0.25,4,3])
+		wallTBr = vizshape.addBox([0.25,4.25,3])
 		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-11.25,-8.75)	
+		wallTBr.setPosition(22.75,-11.5,-8.75)	
 		wallTBr.texmat(texMwallTlr)
 		wallTBr.texture(tile)
 		
@@ -290,7 +290,7 @@ def loadscene(inc, tex):
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-		wallTc = vizshape.addBox([0.25,9,20])
+		wallTc = vizshape.addBox([0.25,9.25,20])
 		wallTc.setEuler(0,0,0)
 		wallTc.setPosition(22.75,-4.75,0.0)
 		wallTc.texmat(texMwallTc)
@@ -300,12 +300,12 @@ def loadscene(inc, tex):
 		wallTb.setPosition(40, 2, 0)
 		wallTb.setEuler(x=90, y=270, z=0)
 		
-		ground.setPosition([0, -13.5, 0])
+		ground.setPosition([0, -14., 0])
 		planeS = vizshape.addBox([5,0.5,18])
 		planeS.setPosition([-20,0,0])
 		
 		doorL.setPosition(22.5,2.0,4.75)
-		doorR.setPosition(22.5,-11.25,-7.25)
+		doorR.setPosition(22.5,-11.5,-7.25)
 		
 		
 	if inc == 2:
@@ -318,7 +318,7 @@ def loadscene(inc, tex):
 		wallL.setPosition(10,0,10)
 		wallL.setEuler(x=0, y=-90, z=0)
 		wallL.texture(metal)
-		planeL.setPosition([3.75, -7.0, 6])
+		planeL.setPosition([1.25, -7.0, 6])
 		planeR.setPosition([2.5, -13.5, -6])
 		
 		texMwallTlr = vizmat.Transform()
@@ -331,24 +331,24 @@ def loadscene(inc, tex):
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
 		wallTF1 = vizshape.addBox([25,0.5,25])
-		wallTF1.setPosition(35,0,0)
+		wallTF1.setPosition(32.5,0,0)
 		wallTF2 = vizshape.addBox([25,0.5,25])
-		wallTF2.setPosition(35,-13.25,0)
+		wallTF2.setPosition(35,-13.75,0)
 	
 		wallTT = vizshape.addBox([25,6,25])
 		wallTT.setEuler(0,0,0)
 		wallTT.setPosition(35,7,0)
 		wallTT.texture(metal)
 	
-		wallTBl = vizshape.addBox([0.25,4,15])
+		wallTBl = vizshape.addBox([0.25,4.25,15])
 		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-11.25,2.5)
+		wallTBl.setPosition(22.75,-11.5,2.5)
 		wallTBl.texmat(texMwallTlr)
 		wallTBl.texture(tile)
 	
-		wallTBr = vizshape.addBox([0.25,4,3])
+		wallTBr = vizshape.addBox([0.25,4.25,3])
 		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-11.25,-8.75)	
+		wallTBr.setPosition(22.75,-11.5,-8.75)	
 		wallTBr.texmat(texMwallTlr)
 		wallTBr.texture(tile)
 		
@@ -367,7 +367,7 @@ def loadscene(inc, tex):
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-		wallTc = vizshape.addBox([0.25,9,20])
+		wallTc = vizshape.addBox([0.25,9.25,20])
 		wallTc.setEuler(0,0,0)
 		wallTc.setPosition(22.75,-4.75,0.0)
 		wallTc.texmat(texMwallTc)
@@ -377,9 +377,9 @@ def loadscene(inc, tex):
 		wallTb.setPosition(40, 2, 0)
 		wallTb.setEuler(x=90, y=270, z=0)
 		
-		ground.setPosition([0, -13.5, 0])
+		ground.setPosition([0, -14., 0])
 		planeS = vizshape.addBox([5,0.5,18])
-		planeS.setPosition([-20,-13.25,0])
+		planeS.setPosition([-20,-13.5,0])
 		
 		doorL.setPosition(22.5,2.0,4.75)
 		doorR.setPosition(22.5,-11.25,-7.25)
@@ -393,8 +393,8 @@ def loadscene(inc, tex):
 		wallL.setPosition(10,0,10)
 		wallL.setEuler(x=0, y=-90, z=0)
 		wallL.texture(metal)
-		planeL.setPosition([2.5, -13.5, 6])
-		planeR.setPosition([3.75, -7.0, -6])
+		planeL.setPosition([2.5, -13.75, 6])
+		planeR.setPosition([1.25, -7.0, -6])
 		
 		texMwallTlr = vizmat.Transform()
 		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
@@ -406,9 +406,9 @@ def loadscene(inc, tex):
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
 		wallTF1 = vizshape.addBox([25,0.5,25])
-		wallTF1.setPosition(35,0,0)
+		wallTF1.setPosition(32.5,0,0)
 		wallTF2 = vizshape.addBox([25,0.5,25])
-		wallTF2.setPosition(35,-13.25,0)
+		wallTF2.setPosition(35,-13.75,0)
 	
 		wallTT = vizshape.addBox([25,6,25])
 		wallTT.setEuler(0,0,0)
@@ -427,22 +427,22 @@ def loadscene(inc, tex):
 		wallTTr.texmat(texMwallTlr)
 		wallTTr.texture(tile)
 		
-		wallTBl = vizshape.addBox([0.25,4,3])
+		wallTBl = vizshape.addBox([0.25,4.25,3])
 		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-11.25,8.75)	
+		wallTBl.setPosition(22.75,-11.5,8.75)	
 		wallTBl.texmat(texMwallTlr)
 		wallTBl.texture(tile)
 		
-		wallTBr = vizshape.addBox([0.25,4,15])
+		wallTBr = vizshape.addBox([0.25,4.25,15])
 		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-11.25,-2.75)
+		wallTBr.setPosition(22.75,-11.5,-2.75)
 		wallTBr.texmat(texMwallTlr)
 		wallTBr.texture(tile)
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-		wallTc = vizshape.addBox([0.25,9,20])
+		wallTc = vizshape.addBox([0.25,9.25,20])
 		wallTc.setEuler(0,0,0)
 		wallTc.setPosition(22.75,-4.75,0.0)
 		wallTc.texmat(texMwallTc)
@@ -452,11 +452,11 @@ def loadscene(inc, tex):
 		wallTb.setPosition(40, 2, 0)
 		wallTb.setEuler(x=90, y=270, z=0)
 		
-		ground.setPosition([0, -13.5, 0])
+		ground.setPosition([0, -14., 0])
 		planeS = vizshape.addBox([5,0.5,18])
-		planeS.setPosition([-20,-13.25,0])
+		planeS.setPosition([-20,-13.75,0])
 		
-		doorL.setPosition(22.5,-11.25,4.75)
+		doorL.setPosition(22.5,-11.5,4.75)
 		doorR.setPosition(22.5,2.0,-7.25)
 	if inc == 4:
 		wallR = vizshape.addPlane([75, 40])
@@ -531,7 +531,7 @@ def loadscene(inc, tex):
 		wallTceilB = vizshape.addBox([25,0.5,25])
 		wallTceilB.setPosition(35,-23,0)
 		
-		ground.setPosition([0, -27.0, 0])
+		ground.setPosition([0, -27.5, 0])
 		planeS = vizshape.addBox([5,0.5,18])
 		planeS.setPosition([-20,-14.0,0])
 		
@@ -610,7 +610,7 @@ def loadscene(inc, tex):
 		wallTceilB = vizshape.addBox([25,0.5,25])
 		wallTceilB.setPosition(35,-23,0)
 		
-		ground.setPosition([0, -27.0, 0])
+		ground.setPosition([0, -27.5, 0])
 		planeS = vizshape.addBox([5,0.5,18])
 		planeS.setPosition([-20,-14.0,0])
 		

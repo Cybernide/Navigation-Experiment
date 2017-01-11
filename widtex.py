@@ -153,8 +153,6 @@ def loadscene(wid, tex):
 	#6 possibilities
 	'''
 	# initialize first plane
-	
-	
 	if (wid == 0) or (wid == 4):
 		planeL = vizshape.addBox([40,0.5,2])
 		texMplaneL = vizmat.Transform()

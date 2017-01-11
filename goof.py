@@ -37,7 +37,7 @@ vizfx.addChild('sky_day.osgb').renderToBackground()
 # This is going to be quite a bit of work after all
 fibpt = vizshape.addBox([1.0, 1.0, 1.0])
 #flarght = vizfx.addChild(fibpt)
-foo = vizfx.addChild('C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\p_mid_stone.osgb')
+foo = vizfx.addChild('C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\p_wid_gravel.osgb')
 logo = vizfx.addChild('logo.osgb')
 logo.setPosition(0, 1.5, 0)
 # Seems like simply saying a vizfx object has a texture is not enough.

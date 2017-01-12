@@ -37,7 +37,7 @@ vizfx.addChild('sky_day.osgb').renderToBackground()
 # This is going to be quite a bit of work after all
 fibpt = vizshape.addBox([1.0, 1.0, 1.0])
 #flarght = vizfx.addChild(fibpt)
-foo = vizfx.addChild('C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\p_wid_gravel.osgb')
+foo = vizfx.addChild('C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\p_nar_gravel.osgb')
 logo = vizfx.addChild('logo.osgb')
 logo.setPosition(0, 1.5, 0)
 # Seems like simply saying a vizfx object has a texture is not enough.
@@ -88,20 +88,20 @@ Y: 314.96
 Z: 19.685
 '''
 
-diffuse_map = viz.addTexture('196.jpg') 
+diffuse_map = viz.addTexture('188.jpg') 
 diffuse_map.wrap(viz.WRAP_T, viz.REPEAT)
 diffuse_map.wrap(viz.WRAP_S, viz.REPEAT)
-normal_map = viz.addTexture('196_norm.jpg')
+normal_map = viz.addTexture('188_norm.jpg')
 normal_map.wrap(viz.WRAP_T, viz.REPEAT)
 normal_map.wrap(viz.WRAP_S, viz.REPEAT)
 #specular_map = viz.addTexture("pattern_66_specular.png")
 #specular_map.wrap(viz.WRAP_T, viz.REPEAT)
 #specular_map.wrap(viz.WRAP_S, viz.REPEAT)
 material = vizfx.addMaterialEffect(
-    vizfx.Diffuse(diffuse_map, 0), vizfx.Bump(normal_map, 1)
+    vizfx.Diffuse(diffuse_map, 1), vizfx.Bump(normal_map, 0)
 )
 
-foo.specular([0.1,0.1,0.1] ) # Make this matte
+foo.specular([0.24,0.24,0.24] ) # Make this matte
 foo.apply(material) # Apply diffuse and normal map
 
 

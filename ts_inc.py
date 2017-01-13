@@ -1,7 +1,5 @@
 ﻿# standard Vizard library
 import viz
-# actors library
-# import vizact
 # proximity sensing library
 import vizproximity
 # 'quests' library
@@ -12,18 +10,19 @@ import vizinfo
 import vizshape
 # lighting effects
 import vizfx
+#from random import randint, sample
 import vizact
-from random import randint, sample
-import main
+import ts_main
 import vizmat
+import time
 
 # Assets directory
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
 
 
-def loadscene(inc, wid):
+def loadscene(remaining, inc):
+	t0 = time.time()
 	print 'incline = ' + str(inc)
-	print 'width = ' + str(wid)
 	# take genwid as the parameter for width of path, and gentex as the parameter for the texture
 	viz.go()
 
@@ -114,47 +113,13 @@ def loadscene(inc, wid):
 		
 	doorL.center(0.5,0,0)
 	doorR.center(0.5,0,0)
+		
 	
-	
-	'''
-Width conditions:
-	0. L0.5x, R1x 
-	1. L1x, R0.5x
-	2. L2x, R1x
-	3. L1x, R2x
-	4. L0.5x, R2x
-	5. L2x, R0.5x
-	#6 possibilities
-	'''
-	# initialize first plane
-	model_plankL = ""
-	model_plankR = ""
-	if (wid == 0) or (wid == 4):
-		model_plankL = "p_nar_"
-	if (wid == 2) or (wid == 5):
-		model_plankL = "p_wid_"
-	elif (wid == 1) or (wid == 3) or (wid == 6):
-		model_plankL = "p_mid_"
-	#planeL.setPosition([2.5, 0, 6])
 
-	# initialize second plane
-	if (wid == 1) or (wid == 5):
-		model_plankR = "p_nar_"
-	if (wid == 3) or (wid == 4):
-		model_plankR = "p_wid_"
-	elif (wid == 0) or (wid == 2) or (wid == 6):
-		model_plankR = "p_mid_"
-	#planeR.setPosition([2.5, 0, -6])
 	
-	model_plankL += "rubber"
-	model_plankR += "rubber"
-	
-	plankL = vizfx.addChild(asset_dir + model_plankL + ".osgb")
-	plankR = vizfx.addChild(asset_dir + model_plankR + ".osgb")
-#	plankL.setPosition([2.5, -0.25, 6])
-#	plankL.setEuler([90,0,0])
-#	plankR.setPosition([2.5, -0.25, -6])
-#	plankR.setEuler([90,0,0])
+	plankL = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
+	plankR = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
+
 	
 	if (inc == 0) or (inc == 4):
 		plankL.setEuler([90,20,0])
@@ -411,7 +376,7 @@ Width conditions:
 		wallTb.setEuler(x=90, y=270, z=0)
 		
 		ground.setPosition([0, -14., 0])
-		plankStart = vizshape.addBox([5,0.5,18])
+		planeStart = vizshape.addBox([5,0.5,18])
 		planeStart.setPosition([-20,-13.5,0])
 		viz.MainView.setPosition([-20, -11.5, 0])
 		
@@ -691,9 +656,8 @@ Width conditions:
 	vizact.onkeydown('l',manager.setDebug,viz.TOGGLE)
 	vizact.onkeydown('o', autodoor.setDebug,viz.TOGGLE)
 	
-	manager.onEnter(None,enterProximity)
 	autodoor.onEnter(None,openSensame)
-	
+	manager.onEnter(None,enterProximity,remaining,t0)
 	
 def openSensame(event):
 	global nearLDoor, nearRDoor
@@ -705,20 +669,22 @@ def openSensame(event):
 		nearRDoor = True
 		doorR.addAction(opendoor)
 	
-def enterProximity(event):
+	
+def enterProximity(event,tr,t0):
 	"""@args vizproximity.ProximityEvent()"""
 	global inLDoor, inRDoor
 	if event.sensor == lDoorSensor:
 		inLDoor = True
-		#changePathWidth(1)
 		children = viz.MainScene.getChildren()
 		for child in children:
 			child.remove()
-		main.run_initPathConditions()
-		
+		ts_main.getData('L',time.time()-t0)
+		ts_main.runTrials(tr)
+
 	elif event.sensor == rDoorSensor:
 		inRDoor = True
 		children = viz.MainScene.getChildren()
 		for child in children:
 			child.remove()
-		main.run_initPathConditions()
+		ts_main.getData('R',time.time()-t0)
+		ts_main.runTrials(tr)

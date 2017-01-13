@@ -1,7 +1,5 @@
 ﻿# standard Vizard library
 import viz
-# actors library
-# import vizact
 # proximity sensing library
 import vizproximity
 # 'quests' library
@@ -12,7 +10,6 @@ import vizinfo
 import vizshape
 # lighting effects
 import vizfx
-import vizact
 from random import randint, sample
 import ex_widtex, ex_inctex, ex_widinc, ex_friwid, ex_friinc, ex_texfri
 

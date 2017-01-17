@@ -26,8 +26,8 @@ results = open(flname, "a")
 
 if __name__ == '__main__':
 	pathcond = randint(0,3)
-	pathcond = 3 # DEBUG LINE
 	if pathcond == 0:
+		pathcond = 0
 		gentex = randint(0,5)
 		ts_tex.loadscene(trials, gentex)
 	elif pathcond == 1:
@@ -49,7 +49,6 @@ def runTrials(remaining_trials):
 	print remaining_trials
 	if remaining_trials != 0:
 		pathcond = randint(0,3)
-		pathcond = 3 #DEBUG LINE
 		if pathcond == 2:
 			gentex = randint(0,5)
 			ts_tex.loadscene(trials, gentex)
@@ -63,5 +62,6 @@ def runTrials(remaining_trials):
 			geninc = randint(0,5)
 			ts_inc.loadscene(trials,geninc)
 	else:
+		results.close()
 		viz.quit()
 		

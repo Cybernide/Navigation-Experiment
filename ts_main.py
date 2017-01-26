@@ -17,7 +17,7 @@ import ts_wid
 import ts_fri
 import ts_inc
 
-trials = 3
+trials = 5
 savepath = "C:\Users\Cyan\Documents\\"
 subjid = raw_input("Enter participant ID: ")
 flname = savepath + "test_subj" + subjid + ".txt"
@@ -25,7 +25,8 @@ global results
 results = open(flname, "a")
 
 if __name__ == '__main__':
-	pathcond = randint(0,3)
+	#pathcond = randint(0,2)
+	pathcond = 3
 	if pathcond == 0:
 		pathcond = 0
 		gentex = randint(0,5)
@@ -48,8 +49,8 @@ def runTrials(remaining_trials):
 	remaining_trials -= 1
 	print remaining_trials
 	if remaining_trials != 0:
-		pathcond = randint(0,3)
-		if pathcond == 2:
+		pathcond = randint(0,2)
+		if pathcond == 0:
 			gentex = randint(0,5)
 			ts_tex.loadscene(trials, gentex)
 		elif pathcond == 1:

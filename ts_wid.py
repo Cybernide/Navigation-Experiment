@@ -30,7 +30,7 @@ def loadscene(remaining, wid):
 
 	#set graphic parameters
 	viz.setMultiSample(4)
-	viz.fov(50)
+	viz.fov(80)
 	viz.go()
 	
 	# Add collision
@@ -60,6 +60,7 @@ def loadscene(remaining, wid):
 
 	# Add ground
 	ground = viz.addChild("ground.osgb")
+	ground.setScale(1.5,0,1.5)
 	
 	#load textures
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
@@ -70,21 +71,21 @@ def loadscene(remaining, wid):
 
 	# Room setup
 	wallR = vizshape.addPlane([75, 30])
-	wallR.setPosition(10,0,-10)
+	wallR.setPosition(10,0,-35)
 	wallR.setEuler(x=0, y=90, z=0)
 	wallR.texture(metal)
 
 	wallL = vizshape.addPlane([75,30])
-	wallL.setPosition(10,0,10)
+	wallL.setPosition(10,0,35)
 	wallL.setEuler(x=0, y=-90, z=0)
 	wallL.texture(metal)
 
-	wallB = vizshape.addPlane([25, 30])
+	wallB = vizshape.addPlane([75, 30])
 	wallB.setPosition(-22.25, 0, 0)
 	wallB.setEuler(x=90, y=90, z=0)
 	wallB.texture(metal)
 	
-	ceiling = vizshape.addPlane([75,30])
+	ceiling = vizshape.addPlane([75,75])
 	ceiling.setEuler(0, 180, 0)
 	ceiling.setPosition(15,10, 0)
 	ceiling.texture(metal)
@@ -98,36 +99,43 @@ def loadscene(remaining, wid):
 	tile.wrap(viz.WRAP_T, viz.REPEAT)
 	tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-	wallTF = vizshape.addBox([25,0.5,25])
-	wallTF.setPosition(35,0,0)
+	wallTF = vizshape.addBox([25,0.5,75])
+	wallTF.setPosition(25,0,0)
 	
-	wallTT = vizshape.addBox([25,6,25])
+	floorL = vizshape.addBox([8,0.5,8])
+	floorL.setEuler(45,0,0)
+	floorL.setPosition(11,0,33.25)
+	floorR = vizshape.addBox([8,0.5,8])
+	floorR.setEuler(45,0,0)
+	floorR.setPosition(11,0,-33.25)
+	
+	wallTT = vizshape.addBox([25,6,75])
 	wallTT.setEuler(0,0,0)
-	wallTT.setPosition(35,7,0)
+	wallTT.setPosition(25,7,0)
 	wallTT.texture(metal)
 	
 	wallTl = vizshape.addBox([0.25,7.5,3])
 	wallTl.setEuler(0,0,0)
-	wallTl.setPosition(22.75,0.5,8.75)
+	wallTl.setPosition(12.75,0.5,33.75)
 	wallTl.texmat(texMwallTlr)
 	wallTl.texture(tile)
 	
 	wallTr = vizshape.addBox([0.25,7.5,3])
 	wallTr.setEuler(0,0,0)
-	wallTr.setPosition(22.75,0.5,-8.75)	
+	wallTr.setPosition(12.75,0.5,-33.75)	
 	wallTr.texmat(texMwallTlr)
 	wallTr.texture(tile)
 	
 	tile.wrap(viz.WRAP_T, viz.REPEAT)
 	tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-	wallTc = vizshape.addBox([0.25,7.5,9.5])
+	wallTc = vizshape.addBox([0.25,7.5,60.5])
 	wallTc.setEuler(0,0,0)
-	wallTc.setPosition(22.75,0.5,0.0)
+	wallTc.setPosition(12.75,0.5,0.0)
 	wallTc.texmat(texMwallTc)
 	wallTc.texture(tile)
 	
-	wallTb = vizshape.addPlane([20,4])
+	wallTb = vizshape.addPlane([75,4])
 	wallTb.setPosition(40, 2, 0)
 	wallTb.setEuler(x=90, y=270, z=0)
 	
@@ -135,11 +143,11 @@ def loadscene(remaining, wid):
 	
 	doorL = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorL.setEuler(90,0,0)
-	doorL.setPosition(22.5,2.0,4.75)
+	doorL.setPosition(12.5,2.0,29.75)
 	
 	doorR = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorR.setEuler(90,0,0)
-	doorR.setPosition(22.5,2.0,-7.25)
+	doorR.setPosition(12.5,2.0,-33.25)
 
 	#change the origin and where door will rotate
 	doorL.center(0.5,0,0)
@@ -175,14 +183,15 @@ def loadscene(remaining, wid):
 	plankL = vizfx.addChild(asset_dir + model_plankL + ".osgb")
 	plankR = vizfx.addChild(asset_dir + model_plankR + ".osgb")
 	
-	plankL.setPosition([2.5, -0.25, 6])
-	plankL.setEuler([90,0,0])
-	plankR.setPosition([2.5, -0.25, -6])
-	plankR.setEuler([90,0,0])
+	plankL.setPosition([-5.95, -0.25, 16.25])
+	plankL.setEuler([45,0,0])
+	plankR.setPosition([-5.95, -0.25, -16.25])
+	plankR.setEuler([135,0,0])
 	
 	# initialize starting plane
-	plankStart = vizshape.addBox([5,0.5,18])
-	plankStart.setPosition([-20,0,0])
+	plankStart = vizshape.addBox([5,0.5,5])
+	plankStart.setPosition([-21.5,0,0])
+	plankStart.setEuler([45,0,0])
 	
 	global inLDoor, inRDoor, nearLDoor, nearRDoor
 	inLDoor = False
@@ -198,8 +207,8 @@ def loadscene(remaining, wid):
 	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,6))
 	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
 	
-	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,6))
-	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,-6))
+	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
+	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
 
 	# Add main viewpoint as proximity target 
 	target = vizproximity.Target(viz.MainView)

@@ -55,17 +55,19 @@ def loadscene(remaining, wid):
 
 	viz.MainView.setPosition([-20, 2, 0])
 
-	# Add white point light 
-	#light = vizfx.addPointLight(color=viz.WHITE, pos=(0,8,0))
-
-	# Add ground
-	ground = viz.addChild("ground.osgb")
-	ground.setScale(1.5,0,1.5)
-	
 	#load textures
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
 	tile = viz.addTexture('images/tile_slate.jpg', wrap=viz.REPEAT)
 	metal = viz.addTexture('metal.jpg', wrap=viz.REPEAT)
+	lava = viz.addTexture('lava.png', wrap=viz.REPEAT)
+
+	# Add white point light 
+	#light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
+
+	# Add ground
+	ground = viz.addChild('ground.osgb')
+	ground.texture(lava)
+	ground.setScale(1.5,0,1.5)
 	
 	global plankL, plankR
 
@@ -204,8 +206,8 @@ def loadscene(remaining, wid):
 
 	# Proximity sensor
 	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor
-	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,6))
-	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
+	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
+	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
 	
 	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
 	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
@@ -231,6 +233,7 @@ def loadscene(remaining, wid):
 	manager.onEnter(None,enterProximity,remaining,t0)
 	
 def openSensame(event):
+	"""@args event"""
 	global nearLDoor, nearRDoor
 	opendoor = vizact.spinto([0,1,0, 181], 360)
 	if event.sensor == lDoorOpenSensor:
@@ -241,7 +244,7 @@ def openSensame(event):
 		doorR.addAction(opendoor)
 	
 def enterProximity(event,tr,t0):
-	"""@args vizproximity.ProximityEvent()"""
+	"""@args vizproximity.ProximityEvent(), trial, time 0"""
 	global inLDoor, inRDoor
 	if event.sensor == lDoorSensor:
 		inLDoor = True

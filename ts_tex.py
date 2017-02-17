@@ -53,17 +53,20 @@ def loadscene(remaining, tex):
 
 	viz.MainView.setPosition([-20, 2, 0])
 
-	# Add white point light 
-	#light = vizfx.addPointLight(color=viz.WHITE, pos=(0,8,0))
-
-	# Add ground
-	ground = viz.addChild("ground.osgb")
-	ground.setScale(1.5,0,1.5)
-	
 	#load textures
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
 	tile = viz.addTexture('images/tile_slate.jpg', wrap=viz.REPEAT)
 	metal = viz.addTexture('metal.jpg', wrap=viz.REPEAT)
+	lava = viz.addTexture('lava.png', wrap=viz.REPEAT)
+
+	# Add white point light 
+	#light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
+
+	# Add ground
+	ground = viz.addChild('ground.osgb')
+	ground.texture(lava)
+	ground.setScale(1.5,0,1.5)
+	
 	
 	global plankL, plankR
 
@@ -147,10 +150,11 @@ def loadscene(remaining, tex):
 	doorR.setEuler(90,0,0)
 	doorR.setPosition(12.5,2.0,-33.25)
 
-	#change the origin and where door will rotate
+	# change the origin and where door will rotate
 	doorL.center(0.5,0,0)
 	doorR.center(0.5,0,0)
 	
+	#Make paths
 	model_plankL = "p_mid_"
 	model_plankR = "p_mid_"
 	
@@ -190,20 +194,24 @@ def loadscene(remaining, tex):
 	plankStart.setPosition([-21.5,0,0])
 	plankStart.setEuler([45,0,0])
 	
-	global inLDoor, inRDoor, nearLDoor, nearRDoor
+	# Set up door opening and 'in' sensors
+	global inLDoor, inRDoor, nearLDoor, nearRDoor, crispy
 	inLDoor = False
 	inRDoor = False
 	nearLDoor = False
 	nearRDoor = False
+	crispy = False
 	
 	#Create proximity manager 
 	manager = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
+	deepfriedManager = vizproximity.Manager()
 
-	# Proximity sensor
+	# Proximity sensors
 	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor
-	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,6))
-	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
+	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
+	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
+	crispySensor = vizproximity.addBoundingBoxSensor(ground)
 	
 	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
 	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
@@ -212,19 +220,31 @@ def loadscene(remaining, tex):
 	target = vizproximity.Target(viz.MainView)
 	manager.addTarget(target)
 	autodoor.addTarget(target)
+	deepfriedManager.addTarget(target)
 
 	# Add destination sensors to manager
 	manager.addSensor(lDoorSensor)
 	manager.addSensor(rDoorSensor)
 	autodoor.addSensor(lDoorOpenSensor)
 	autodoor.addSensor(rDoorOpenSensor)
+	deepfriedManager.addSensor(crispySensor)
 
 	# Toggle debug shapes with keypress 
 	vizact.onkeydown('l',manager.setDebug,viz.TOGGLE)
 	vizact.onkeydown('o', autodoor.setDebug,viz.TOGGLE)
+	vizact.onkeydown('9', deepfriedManager.setDebug,viz.TOGGLE)
 	
 	autodoor.onEnter(None,openSensame)
 	manager.onEnter(None,enterProximity,remaining,t0)
+	deepfriedManager.onEnter(None,friedParticipant)
+	
+def friedParticipant(event):
+	
+	global crispy
+	print str(crispy)
+	if event.sensor == crispySensor:
+		crispy = True
+		print str(crispy)
 	
 def openSensame(event):
 	global nearLDoor, nearRDoor

@@ -26,10 +26,10 @@ results = open(flname, "a")
 
 if __name__ == '__main__':
 	#pathcond = randint(0,2)
-	pathcond = 3
+	pathcond = 0
 	if pathcond == 0:
-		pathcond = 0
 		gentex = randint(0,5)
+		gentex = 0
 		ts_tex.loadscene(trials, gentex)
 	elif pathcond == 1:
 		genwid = randint(0,5)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 		genfri = randint(0,1)
 		ts_fri.loadscene(trials,genfri)
 	elif pathcond == 3:
-		geninc = randint(0,5)
+		geninc = randint(0,1)
 		ts_inc.loadscene(trials,geninc)
 	
 def getData(choice, finish_time):

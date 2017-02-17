@@ -53,17 +53,19 @@ def loadscene(remaining, fri):
 
 	viz.MainView.setPosition([-20, 2, 0])
 
-	# Add white point light 
-	#light = vizfx.addPointLight(color=viz.WHITE, pos=(0,8,0))
-
-	# Add ground
-	ground = viz.addChild("ground.osgb")
-	ground.setScale(1.5,0,1.5)
-	
 	#load textures
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
 	tile = viz.addTexture('images/tile_slate.jpg', wrap=viz.REPEAT)
 	metal = viz.addTexture('metal.jpg', wrap=viz.REPEAT)
+	lava = viz.addTexture('lava.png', wrap=viz.REPEAT)
+
+	# Add white point light 
+	#light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
+
+	# Add ground
+	ground = viz.addChild('ground.osgb')
+	ground.texture(lava)
+	ground.setScale(1.5,0,1.5)
 	
 	global plankL, plankR
 
@@ -137,6 +139,7 @@ def loadscene(remaining, fri):
 	wallTb.setPosition(40, 2, 0)
 	wallTb.setEuler(x=90, y=270, z=0)
 	
+	# Door setup
 	global doorL, doorR
 	
 	doorL = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
@@ -150,7 +153,8 @@ def loadscene(remaining, fri):
 	#change the origin and where door will rotate
 	doorL.center(0.5,0,0)
 	doorR.center(0.5,0,0)
-		
+	
+	# Initialize paths
 	plankL = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
 	plankR = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
 	
@@ -174,19 +178,21 @@ def loadscene(remaining, fri):
 	plankStart.setPosition([-21.5,0,0])
 	plankStart.setEuler([45,0,0])
 	
+	# Sensors for doors
 	global inLDoor, inRDoor, nearLDoor, nearRDoor
 	inLDoor = False
 	inRDoor = False
 	nearLDoor = False
 	nearRDoor = False
+	
 	#Create proximity manager 
 	manager = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
 
 	# Proximity sensor
 	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor
-	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,6))
-	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
+	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
+	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
 	
 	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
 	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))

@@ -28,7 +28,7 @@ def loadscene(remaining, inc):
 
 	#set graphic parameters
 	viz.setMultiSample(4)
-	viz.fov(50)
+	viz.fov(80)
 	viz.go()
 	# Add collision
 	#viz.collision(viz.ON)
@@ -56,13 +56,15 @@ def loadscene(remaining, inc):
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
 	tile = viz.addTexture('images/tile_slate.jpg', wrap=viz.REPEAT)
 	metal = viz.addTexture('metal.jpg', wrap=viz.REPEAT)
+	lava = viz.addTexture('lava.png', wrap=viz.REPEAT)
 
 	# Add white point light 
 	#light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
 
 	# Add ground
 	ground = viz.addChild('ground.osgb')
-	ground.texture(tile)
+	ground.texture(lava)
+	ground.setScale(1.5,0,1.5)
 	
 	global inLDoor, inRDoor, nearLDoor, nearRDoor
 	inLDoor = False
@@ -77,14 +79,10 @@ def loadscene(remaining, inc):
 	# Proximity sensor
 	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor
 	
-
 	# Add main viewpoint as proximity target 
 	target = vizproximity.Target(viz.MainView)
 	manager.addTarget(target)
 	autodoor.addTarget(target)
-
-	
-
 
 	
 	global plankL, plankR
@@ -92,12 +90,12 @@ def loadscene(remaining, inc):
 	#room
 
 
-	wallB = vizshape.addPlane([25, 30])
+	wallB = vizshape.addPlane([75, 30])
 	wallB.setPosition(-22.25, 0, 0)
 	wallB.setEuler(x=90, y=90, z=0)
 	wallB.texture(metal)
 	
-	ceiling = vizshape.addPlane([75,30])
+	ceiling = vizshape.addPlane([75,75])
 	ceiling.setEuler(0, 180, 0)
 	ceiling.setPosition(15,10, 0)
 	ceiling.texture(metal)
@@ -109,47 +107,47 @@ def loadscene(remaining, inc):
 		
 	doorR = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorR.setEuler(90,0,0)
-	
 		
 	doorL.center(0.5,0,0)
 	doorR.center(0.5,0,0)
-		
-	
-
 	
 	plankL = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
 	plankR = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
+	
+	# I've nicknamed the next section of code:
+	# "I hate you for being right, Pythagoras"
 
 	
-	if (inc == 0) or (inc == 4):
-		plankL.setEuler([90,20,0])
-	if (inc == 2) or (inc == 5):
-		plankL.setEuler([90,-20,0])
-	elif (inc == 1) or (inc == 3) or (inc == 6):
-		plankL.setEuler([90,0,0])
+	if (inc == 0):
+		#slant up
+		plankL.setEuler([45,-20,0])
+	elif (inc == 1):
+		#slant down
+		plankL.setEuler([45,0,0])
 	
 	# initialize second plane
-	if (inc == 1) or (inc == 5):
-		plankR.setEuler([90,20,0])
-	if (inc == 3) or (inc == 4):
-		plankR.setEuler([90,-20,0])
-	elif (inc == 0) or (inc == 2) or (inc == 6):
-		plankR.setEuler([90,0,0])
+	if (inc == 1):
+		# slant up
+		plankR.setEuler([135,-20,0])
+	elif (inc == 0):
+		#slant down
+		plankR.setEuler([135,0,0])
 		
-	# initialize starting plane
 	if inc == 0:
+		# rightmost wall
 		wallR = vizshape.addPlane([75, 30])
-		wallR.setPosition(10,0,-10)
+		wallR.setPosition(10,0,-35)
 		wallR.setEuler(x=0, y=90, z=0)
 		wallR.texture(metal)
-
+		# leftmost wall
 		wallL = vizshape.addPlane([75,30])
-		wallL.setPosition(10,0,10)
+		wallL.setPosition(10,0,35)
 		wallL.setEuler(x=0, y=-90, z=0)
 		wallL.texture(metal)
-		#destination point
-		plankL.setPosition([1.25, -6.8, 6])
-		plankR.setPosition([2.5, 0, -6])
+		
+		# destination point
+		plankL.setPosition([-6.7, -7.15, 15.55])
+		plankR.setPosition([-5.95, -14, -16.25])
 		
 		texMwallTlr = vizmat.Transform()
 		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
@@ -159,61 +157,82 @@ def loadscene(remaining, inc):
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		floorT1 = vizshape.addBox([25,0.5,25])
-		floorT1.setPosition(35,0,0)
-		floorT2 = vizshape.addBox([25,0.5,25])
-		floorT2.setPosition(32.5,-13.75,0)
-	
-		wallTT = vizshape.addBox([25,6,25])
+		
+		# target area, top floor
+		floorT1 = vizshape.addBox([25,0.5,75])
+		floorT1.setPosition(22,0,0)
+		# target area, bottom floor
+		floorT2 = vizshape.addBox([25,0.5,75])
+		floorT2.setPosition(23,-13.75,0)
+		
+		# target area, top ceiling	
+		wallTT = vizshape.addBox([25,6,75])
 		wallTT.setEuler(0,0,0)
-		wallTT.setPosition(35,7,0)
+		wallTT.setPosition(25,7,0)
 		wallTT.texture(metal)
-	
-		wallTl = vizshape.addBox([0.25,4,15])
+		
+		# top left wall facing user, target area
+		# is narrow in this condition
+		wallTl = vizshape.addBox([0.25,4,3])
 		wallTl.setEuler(0,0,0)
-		wallTl.setPosition(22.75,2,2.5)
+		wallTl.setPosition(12.75,2.25,33.75)
 		wallTl.texmat(texMwallTlr)
 		wallTl.texture(tile)
-	
-		wallTTr = vizshape.addBox([0.25,4,3])
+		
+		# top right facing user
+		# is wide in this condition
+		wallTTr = vizshape.addBox([0.25,4,65])
 		wallTTr.setEuler(0,0,0)
-		wallTTr.setPosition(22.75,2.25,-8.75)	
-		wallTTr.texmat(texMwallTlr)
+		wallTTr.setPosition(12.75,2.25, -3)
 		wallTTr.texture(tile)
 		
-		wallTBl = vizshape.addBox([0.25,4.25,3])
+		# bottom left wall
+		# is wide in this condition
+		wallTBl = vizshape.addBox([0.25,4.25,65])
 		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-11.5,8.75)	
+		wallTBl.setPosition(12.75,-11.5,3)	
 		wallTBl.texmat(texMwallTlr)
 		wallTBl.texture(tile)
 		
-		wallTBr = vizshape.addBox([0.25,4.25,15])
+		# bottom right wall
+		# is narrow in this condition
+		wallTBr = vizshape.addBox([0.25,4.25,3])
 		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-11.5,-2.75)
+		wallTBr.setPosition(12.75,-11.5,-33.75)
 		wallTBr.texmat(texMwallTlr)
 		wallTBr.texture(tile)
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTc = vizshape.addBox([0.25,9.25,20])
+		
+		# central wall in target area
+		wallTc = vizshape.addBox([0.25,9.25,75])
 		wallTc.setEuler(0,0,0)
-		wallTc.setPosition(22.75,-4.75,0.0)
+		wallTc.setPosition(12.75,-4.75,0.0)
 		wallTc.texmat(texMwallTc)
 		wallTc.texture(tile)
-	
+		
+		# back wall behind target area
 		wallTb = vizshape.addPlane([20,4])
 		wallTb.setPosition(40, 2, 0)
 		wallTb.setEuler(x=90, y=270, z=0)
 		
+		#platforms in front of doors
+		floorL = vizshape.addBox([8,0.5,8])
+		floorL.setEuler(45,0,0)
+		floorL.setPosition(9.85,0,31)
+		floorR = vizshape.addBox([8,1,8])
+		floorR.setEuler(45,0,0)
+		floorR.setPosition(11,-14,-33.25)
+		
 		ground.setPosition([0, -14., 0])
-		plankStart = vizshape.addBox([5,0.5,18])
-		plankStart.setPosition([-20,0,0])
+		plankStart = vizshape.addBox([6,2,6])
+		plankStart.setPosition([-22.2,-14.5,0])
+		plankStart.setEuler([45,0,0])
 		viz.MainView.setPosition([-20, 2, 0])
 		
-		doorL.setPosition(22.5,-11.5,4.75)
-		doorR.setPosition(22.5,2.0,-7.25)
+		doorL.setPosition(12.5,2.0,29.75)
+		doorR.setPosition(12.5,-11.5,-32.25)
 		
 		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,-10.5,6))
 		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
@@ -223,18 +242,20 @@ def loadscene(remaining, inc):
 
 		
 	if inc == 1:
+		# rightmost wall
 		wallR = vizshape.addPlane([75, 30])
-		wallR.setPosition(10,0,-10)
+		wallR.setPosition(10,0,-35)
 		wallR.setEuler(x=0, y=90, z=0)
 		wallR.texture(metal)
-
+		# leftmost wall
 		wallL = vizshape.addPlane([75,30])
-		wallL.setPosition(10,0,10)
+		wallL.setPosition(10,0,35)
 		wallL.setEuler(x=0, y=-90, z=0)
 		wallL.texture(metal)
 		
-		plankL.setPosition([2.5, 0, 6])
-		plankR.setPosition([1.25, -6.8, -6])
+		# destination point
+		plankL.setPosition([-5.7, -14, 14.75])
+		plankR.setPosition([-5.95, -7, -16.25])
 		
 		texMwallTlr = vizmat.Transform()
 		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
@@ -244,406 +265,91 @@ def loadscene(remaining, inc):
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		floorT1 = vizshape.addBox([25,0.5,25])
-		floorT1.setPosition(35,0,0)
-		floorT2 = vizshape.addBox([25,0.5,25])
-		floorT2.setPosition(35,-13.75,0)
-	
-		wallTT = vizshape.addBox([25,6,25])
-		wallTT.setEuler(0,0,0)
-		wallTT.setPosition(35,7,0)
-		wallTT.texture(metal)
-	
-		wallTBl = vizshape.addBox([0.25,4.25,15])
-		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-11.5,2.5)
-		wallTBl.texmat(texMwallTlr)
-		wallTBl.texture(tile)
-	
-		wallTBr = vizshape.addBox([0.25,4.25,3])
-		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-11.5,-8.75)	
-		wallTBr.texmat(texMwallTlr)
-		wallTBr.texture(tile)
 		
-		wallTl = vizshape.addBox([0.25,4,3])
+		# target area, top floor
+		floorT1 = vizshape.addBox([25,0.5,75])
+		floorT1.setPosition(22.5,0,0)
+		# target area, bottom floor
+		floorT2 = vizshape.addBox([25,0.5,75])
+		floorT2.setPosition(25,-13.75,0)
+		
+		# target area, top ceiling	
+		wallTT = vizshape.addBox([25,6,75])
+		wallTT.setEuler(0,0,0)
+		wallTT.setPosition(25,7,0)
+		wallTT.texture(metal)
+		
+		# top left wall facing user, target area
+		# is narrow in this condition
+		wallTl = vizshape.addBox([0.25,4,65])
 		wallTl.setEuler(0,0,0)
-		wallTl.setPosition(22.75,2.25,8.75)	
+		wallTl.setPosition(12.75,2.25,3)
 		wallTl.texmat(texMwallTlr)
 		wallTl.texture(tile)
 		
-		wallTr = vizshape.addBox([0.25,4,15])
-		wallTr.setEuler(0,0,0)
-		wallTr.setPosition(22.75,2.25,-2.75)
-		wallTr.texmat(texMwallTlr)
-		wallTr.texture(tile)
-	
-		tile.wrap(viz.WRAP_T, viz.REPEAT)
-		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTc = vizshape.addBox([0.25,9.25,20])
-		wallTc.setEuler(0,0,0)
-		wallTc.setPosition(22.75,-4.75,0.0)
-		wallTc.texmat(texMwallTc)
-		wallTc.texture(tile)
-	
-		wallTb = vizshape.addPlane([20,4])
-		wallTb.setPosition(40, 2, 0)
-		wallTb.setEuler(x=90, y=270, z=0)
-		
-		ground.setPosition([0, -14., 0])
-		plankStart = vizshape.addBox([5,0.5,18])
-		plankStart.setPosition([-20,0,0])
-		viz.MainView.setPosition([-20, 2, 0])
-		
-		doorL.setPosition(22.5,2.0,4.75)
-		doorR.setPosition(22.5,-11.5,-7.25)
-		
-		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,6))
-		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,-10.5,-6))
-		
-		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,6))
-		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-10.5,-6))
-		
-	if inc == 2:
-		wallR = vizshape.addPlane([75, 30])
-		wallR.setPosition(10,0,-10)
-		wallR.setEuler(x=0, y=90, z=0)
-		wallR.texture(metal)
-
-		wallL = vizshape.addPlane([75,30])
-		wallL.setPosition(10,0,10)
-		wallL.setEuler(x=0, y=-90, z=0)
-		wallL.texture(metal)
-		plankL.setPosition([1.25, -7.0, 6])
-		plankR.setPosition([2.5, -13.5, -6])
-		
-		texMwallTlr = vizmat.Transform()
-		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
-	
-		texMwallTc = vizmat.Transform()
-		texMwallTc.setScale( [1,1,1.3] )
-	
-		tile.wrap(viz.WRAP_T, viz.REPEAT)
-		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTF1 = vizshape.addBox([25,0.5,25])
-		wallTF1.setPosition(32.5,0,0)
-		wallTF2 = vizshape.addBox([25,0.5,25])
-		wallTF2.setPosition(35,-13.75,0)
-	
-		wallTT = vizshape.addBox([25,6,25])
-		wallTT.setEuler(0,0,0)
-		wallTT.setPosition(35,7,0)
-		wallTT.texture(metal)
-	
-		wallTBl = vizshape.addBox([0.25,4.25,15])
-		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-11.5,2.5)
-		wallTBl.texmat(texMwallTlr)
-		wallTBl.texture(tile)
-	
-		wallTBr = vizshape.addBox([0.25,4.25,3])
-		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-11.5,-8.75)	
-		wallTBr.texmat(texMwallTlr)
-		wallTBr.texture(tile)
-		
-		wallTl = vizshape.addBox([0.25,4,3])
-		wallTl.setEuler(0,0,0)
-		wallTl.setPosition(22.75,2.25,8.75)	
-		wallTl.texmat(texMwallTlr)
-		wallTl.texture(tile)
-		
-		wallTr = vizshape.addBox([0.25,4,15])
-		wallTr.setEuler(0,0,0)
-		wallTr.setPosition(22.75,2.25,-2.75)
-		wallTr.texmat(texMwallTlr)
-		wallTr.texture(tile)
-	
-		tile.wrap(viz.WRAP_T, viz.REPEAT)
-		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTc = vizshape.addBox([0.25,9.25,20])
-		wallTc.setEuler(0,0,0)
-		wallTc.setPosition(22.75,-4.75,0.0)
-		wallTc.texmat(texMwallTc)
-		wallTc.texture(tile)
-	
-		wallTb = vizshape.addPlane([20,4])
-		wallTb.setPosition(40, 2, 0)
-		wallTb.setEuler(x=90, y=270, z=0)
-		
-		ground.setPosition([0, -14., 0])
-		planeStart = vizshape.addBox([5,0.5,18])
-		planeStart.setPosition([-20,-13.5,0])
-		viz.MainView.setPosition([-20, -11.5, 0])
-		
-		doorL.setPosition(22.5,2.0,4.75)
-		doorR.setPosition(22.5,-11.25,-7.25)
-		
-		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,6))
-		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,-10.5,-6))
-		
-		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,6))
-		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-10.5,-6))
-		
-	if inc == 3:
-		wallR = vizshape.addPlane([75, 30])
-		wallR.setPosition(10,0,-10)
-		wallR.setEuler(x=0, y=90, z=0)
-		wallR.texture(metal)
-
-		wallL = vizshape.addPlane([75,30])
-		wallL.setPosition(10,0,10)
-		wallL.setEuler(x=0, y=-90, z=0)
-		wallL.texture(metal)
-		plankL.setPosition([2.5, -13.75, 6])
-		plankR.setPosition([1.25, -7.0, -6])
-		
-		texMwallTlr = vizmat.Transform()
-		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
-	
-		texMwallTc = vizmat.Transform()
-		texMwallTc.setScale( [1,1,1.3] )
-	
-		tile.wrap(viz.WRAP_T, viz.REPEAT)
-		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTF1 = vizshape.addBox([25,0.5,25])
-		wallTF1.setPosition(32.5,0,0)
-		wallTF2 = vizshape.addBox([25,0.5,25])
-		wallTF2.setPosition(35,-13.75,0)
-	
-		wallTT = vizshape.addBox([25,6,25])
-		wallTT.setEuler(0,0,0)
-		wallTT.setPosition(35,7,0)
-		wallTT.texture(metal)
-	
-		wallTl = vizshape.addBox([0.25,4,15])
-		wallTl.setEuler(0,0,0)
-		wallTl.setPosition(22.75,2,2.5)
-		wallTl.texmat(texMwallTlr)
-		wallTl.texture(tile)
-	
+		# top right facing user
+		# is wide in this condition
 		wallTTr = vizshape.addBox([0.25,4,3])
 		wallTTr.setEuler(0,0,0)
-		wallTTr.setPosition(22.75,2.25,-8.75)	
+		wallTTr.setPosition(12.75,2.25,-33.75)	
 		wallTTr.texmat(texMwallTlr)
 		wallTTr.texture(tile)
 		
+		# bottom left wall
+		# is wide in this condition
 		wallTBl = vizshape.addBox([0.25,4.25,3])
 		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-11.5,8.75)	
+		wallTBl.setPosition(12.75,-11.5,33.75)	
 		wallTBl.texmat(texMwallTlr)
 		wallTBl.texture(tile)
 		
-		wallTBr = vizshape.addBox([0.25,4.25,15])
+		# bottom right wall
+		# is narrow in this condition
+		wallTBr = vizshape.addBox([0.25,4.25,65])
 		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-11.5,-2.75)
+		wallTBr.setPosition(12.75,-11.5,-2.75)
 		wallTBr.texmat(texMwallTlr)
 		wallTBr.texture(tile)
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTc = vizshape.addBox([0.25,9.25,20])
+		
+		# central wall in target area
+		wallTc = vizshape.addBox([0.25,9.25,75])
 		wallTc.setEuler(0,0,0)
-		wallTc.setPosition(22.75,-4.75,0.0)
+		wallTc.setPosition(12.75,-4.75,0.0)
 		wallTc.texmat(texMwallTc)
 		wallTc.texture(tile)
-	
+		
+		# back wall behind target area
 		wallTb = vizshape.addPlane([20,4])
 		wallTb.setPosition(40, 2, 0)
 		wallTb.setEuler(x=90, y=270, z=0)
 		
-		ground.setPosition([0, -14., 0])
-		plankStart = vizshape.addBox([5,0.5,18])
-		plankStart.setPosition([-20,-13.75,0])
-		viz.MainView.setPosition([-20, -11.5, 0])
+		# Platforms in front of doors
+		floorL = vizshape.addBox([8,0.5,8])
+		floorL.setEuler(45,0,0)
+		floorL.setPosition(11,-14,31.25)
+		floorR = vizshape.addBox([8,0.5,8])
+		floorR.setEuler(45,0,0)
+		floorR.setPosition(9.5,0,-33.25)
 		
-		doorL.setPosition(22.5,-11.5,4.75)
-		doorR.setPosition(22.5,2.0,-7.25)
+		ground.setPosition([0, -14., 0])
+		plankStart = vizshape.addBox([6,2,6])
+		plankStart.setPosition([-21.5,-14.5,0])
+		plankStart.setEuler([45,0,0])
+		viz.MainView.setPosition([-20, 2, 0])
+		
+		
+		doorL.setPosition(12.5,-11.5,29.75)
+		doorR.setPosition(12.5,2.0,-32.25)
 		
 		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,-10.5,6))
 		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
 		
 		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-10.5,6))
 		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,-6))
-	if inc == 4:
-		wallR = vizshape.addPlane([75, 40])
-		wallR.setPosition(10,-10,-10)
-		wallR.setEuler(x=0, y=90, z=0)
-		wallR.texture(metal)
-
-		wallL = vizshape.addPlane([75,40])
-		wallL.setPosition(10,-10,10)
-		wallL.setEuler(x=0, y=-90, z=0)
-		wallL.texture(metal)		
 		
-		plankL.setPosition([1.25, -20.75, 6])
-		plankR.setPosition([1.25, -7.0, -6])
-		
-		texMwallTlr = vizmat.Transform()
-		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
-	
-		texMwallTc = vizmat.Transform()
-		texMwallTc.setScale( [1,1,1.3] )
-	
-		tile.wrap(viz.WRAP_T, viz.REPEAT)
-		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTF1 = vizshape.addBox([25,0.5,25])
-		wallTF1.setPosition(32.5,0,0)
-		wallTF2 = vizshape.addBox([25,0.5,25])
-		wallTF2.setPosition(32.5,-27,0)
-	
-		wallTT = vizshape.addBox([25,6,25])
-		wallTT.setEuler(0,0,0)
-		wallTT.setPosition(35,7,0)
-		wallTT.texture(metal)
-	
-		wallTl = vizshape.addBox([0.25,4,15])
-		wallTl.setEuler(0,0,0)
-		wallTl.setPosition(22.75,2,2.5)
-		wallTl.texmat(texMwallTlr)
-		wallTl.texture(tile)
-	
-		wallTTr = vizshape.addBox([0.25,4,3])
-		wallTTr.setEuler(0,0,0)
-		wallTTr.setPosition(22.75,2.25,-8.75)	
-		wallTTr.texmat(texMwallTlr)
-		wallTTr.texture(tile)
-		
-		wallTBl = vizshape.addBox([0.25,4,3])
-		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-25.25,8.75)	
-		wallTBl.texmat(texMwallTlr)
-		wallTBl.texture(tile)
-		
-		wallTBr = vizshape.addBox([0.25,4,15])
-		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-25.25,-2.75)
-		wallTBr.texmat(texMwallTlr)
-		wallTBr.texture(tile)
-	
-		tile.wrap(viz.WRAP_T, viz.REPEAT)
-		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTc = vizshape.addBox([0.25,23,20])
-		wallTc.setEuler(0,0,0)
-		wallTc.setPosition(22.75,-11.25,0.0)
-		wallTc.texmat(texMwallTc)
-		wallTc.texture(tile)
-	
-		wallTb = vizshape.addPlane([20,4])
-		wallTb.setPosition(40, 2, 0)
-		wallTb.setEuler(x=90, y=270, z=0)
-		
-		wallTceilB = vizshape.addBox([25,0.5,25])
-		wallTceilB.setPosition(35,-23,0)
-		
-		ground.setPosition([0, -27.5, 0])
-		plankStart = vizshape.addBox([5,0.5,18])
-		plankStart.setPosition([-20,-14.0,0])
-		viz.MainView.setPosition([-20, -11.5, 0])
-		
-		doorL.setPosition(22.5,-25.25,4.75)
-		doorR.setPosition(22.5,2.0,-7.25)
-		
-		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,-24.5,6))
-		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
-		
-		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-24.5,6))
-		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,-6))
-		
-	elif inc == 5:
-		wallR = vizshape.addPlane([75, 40])
-		wallR.setPosition(10,-10,-10)
-		wallR.setEuler(x=0, y=90, z=0)
-		wallR.texture(metal)
-
-		wallL = vizshape.addPlane([75,40])
-		wallL.setPosition(10,-10,10)
-		wallL.setEuler(x=0, y=-90, z=0)
-		wallL.texture(metal)		
-		
-		plankL.setPosition([1.25, -7.0, 6])
-		plankR.setPosition([1.25, -20.75, -6])
-		
-		texMwallTlr = vizmat.Transform()
-		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
-	
-		texMwallTc = vizmat.Transform()
-		texMwallTc.setScale( [1,1,1.3] )
-	
-		tile.wrap(viz.WRAP_T, viz.REPEAT)
-		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTF1 = vizshape.addBox([25,0.5,25])
-		wallTF1.setPosition(32.5,0,0)
-		wallTF2 = vizshape.addBox([25,0.5,25])
-		wallTF2.setPosition(32.5,-27,0)
-	
-		wallTT = vizshape.addBox([25,6,25])
-		wallTT.setEuler(0,0,0)
-		wallTT.setPosition(35,7,0)
-		wallTT.texture(metal)
-	
-		wallTl = vizshape.addBox([0.25,4,3])
-		wallTl.setEuler(0,0,0)
-		wallTl.setPosition(22.75,2,8.75)
-		wallTl.texmat(texMwallTlr)
-		wallTl.texture(tile)
-	
-		wallTTr = vizshape.addBox([0.25,4,15])
-		wallTTr.setEuler(0,0,0)
-		wallTTr.setPosition(22.75,2.25,-2.75)	
-		wallTTr.texmat(texMwallTlr)
-		wallTTr.texture(tile)
-		
-		wallTBl = vizshape.addBox([0.25,4,15])
-		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(22.75,-25.25,2.75)	
-		wallTBl.texmat(texMwallTlr)
-		wallTBl.texture(tile)
-		
-		wallTBr = vizshape.addBox([0.25,4,3])
-		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(22.75,-25.25,-8.75)
-		wallTBr.texmat(texMwallTlr)
-		wallTBr.texture(tile)
-	
-		tile.wrap(viz.WRAP_T, viz.REPEAT)
-		tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-		wallTc = vizshape.addBox([0.25,23,20])
-		wallTc.setEuler(0,0,0)
-		wallTc.setPosition(22.75,-11.25,0.0)
-		wallTc.texmat(texMwallTc)
-		wallTc.texture(tile)
-	
-		wallTb = vizshape.addPlane([20,4])
-		wallTb.setPosition(40, 2, 0)
-		wallTb.setEuler(x=90, y=270, z=0)
-		
-		wallTceilB = vizshape.addBox([25,0.5,25])
-		wallTceilB.setPosition(35,-23,0)
-		
-		ground.setPosition([0, -27.5, 0])
-		plankStart = vizshape.addBox([5,0.5,18])
-		plankStart.setPosition([-20,-14.0,0])
-		viz.MainView.setPosition([-20, -11.5, 0])
-		
-		doorL.setPosition(22.5,2.0,4.75)
-		doorR.setPosition(22.5,-25.25,-7.25)
-		
-		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,6))
-		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,-24.5,-6))
-		
-		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,6))
-		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-24.5,-6))
 		
 	
 	# Add destination sensors to manager

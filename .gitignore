@@ -45,3 +45,6 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+ts_wid.pyc
+*.pyc
+ts_tex.pyc

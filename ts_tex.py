@@ -32,7 +32,7 @@ def loadscene(remaining, tex):
 	viz.go()
 	
 	# Add collision
-	viz.collision(viz.ON)
+	#viz.collision(viz.ON)
 
 	# this section is really just so I can walk around like it's a computer game
 	###########################
@@ -208,11 +208,13 @@ def loadscene(remaining, tex):
 	deepfriedManager = vizproximity.Manager()
 
 	# Proximity sensors
-	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor
+	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor, crispySensor1, crispySensor2, crispySensor3
 	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
 	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
-	crispySensor = vizproximity.addBoundingBoxSensor(ground)
-	
+	crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
+	crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
+	crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0,-28),(-1.25,-27.25),(-2.0,-28),(-30,0),(-2.0,28),(-1.25,27.25),(0,28)]), source=viz.Matrix.translate(12.25,0,0))
+
 	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
 	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
 
@@ -227,7 +229,9 @@ def loadscene(remaining, tex):
 	manager.addSensor(rDoorSensor)
 	autodoor.addSensor(lDoorOpenSensor)
 	autodoor.addSensor(rDoorOpenSensor)
-	deepfriedManager.addSensor(crispySensor)
+	deepfriedManager.addSensor(crispySensor1)
+	deepfriedManager.addSensor(crispySensor2)
+	deepfriedManager.addSensor(crispySensor3)
 
 	# Toggle debug shapes with keypress 
 	vizact.onkeydown('l',manager.setDebug,viz.TOGGLE)
@@ -242,7 +246,10 @@ def friedParticipant(event):
 	
 	global crispy
 	print str(crispy)
-	if event.sensor == crispySensor:
+	if event.sensor == crispySensor1:
+		crispy = True
+		print str(crispy)
+	if event.sensor == crispySensor2:
 		crispy = True
 		print str(crispy)
 	

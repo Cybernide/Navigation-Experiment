@@ -1,15 +1,8 @@
 ﻿# standard Vizard library
 import viz
-# proximity sensing library
-import vizproximity
-# 'quests' library
-import viztask
 # infodump mode
 import vizinfo
 # planes and shapes
-import vizshape
-# lighting effects
-import vizfx
 from random import randint, sample
 import os.path
 import ts_tex
@@ -23,9 +16,10 @@ subjid = raw_input("Enter participant ID: ")
 flname = savepath + "test_subj" + subjid + ".txt"
 global results
 results = open(flname, "a")
-
+p = ["00", "01", "02", "03", "04", "05", "10", "11",
+	"12", "13", "14", "15", "20", "21", "30", "31"]
 if __name__ == '__main__':
-	#pathcond = randint(0,2)
+	#pathcond = randint(0,2)9
 	pathcond = 3
 	if pathcond == 0:
 		gentex = randint(0,5)
@@ -41,7 +35,7 @@ if __name__ == '__main__':
 		ts_fri.loadscene(trials,genfri)
 	elif pathcond == 3:
 		geninc = randint(0,1)
-		geninc = 0
+		geninc = 1
 		ts_inc.loadscene(trials,geninc)
 	
 def getData(choice, finish_time):

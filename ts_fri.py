@@ -136,7 +136,7 @@ def loadscene(remaining, fri):
 	wallTc.texture(tile)
 	
 	wallTb = vizshape.addPlane([75,4])
-	wallTb.setPosition(40, 2, 0)
+	wallTb.setPosition(35, 2, 0)
 	wallTb.setEuler(x=90, y=270, z=0)
 	
 	# Door setup

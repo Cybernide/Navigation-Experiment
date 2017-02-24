@@ -217,7 +217,7 @@ def loadscene(remaining, inc):
 		wallTc.texture(tile)
 		
 		# back wall behind target area
-		wallTb = vizshape.addPlane([20,4])
+		wallTb = vizshape.addPlane([75,4])
 		wallTb.setPosition(40, 2, 0)
 		wallTb.setEuler(x=90, y=270, z=0)
 		
@@ -238,19 +238,19 @@ def loadscene(remaining, inc):
 		doorL.setPosition(12.5,2.0,29.75)
 		doorR.setPosition(12.5,-11.5,-32.25)
 		
-		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,-10.5,6))
-		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
+		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
+		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,-10.5,-32))
 		
-		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-10.5,6))
-		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,-6))
+		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
+		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,-10.5,-32))
 		
 		plankStartSensor = vizproximity.addBoundingBoxSensor(plankStart,scale=(1.0,10.0,1.0))
-		plankLSensor = vizproximity.addBoundingBoxSensor(plankL,scale=(1.0,20.0,1.0))
-		plankRSensor = vizproximity.addBoundingBoxSensor(plankR,scale=(1.0,20.0,1.0))
-		floorLSensor = vizproximity.addBoundingBoxSensor(floorL,scale=(1.0,20.0,1.5))
-		floorRSensor = vizproximity.addBoundingBoxSensor(floorR,scale=(1.0,20.0,1.0))
-		floorT1Sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,20.0,1.0))
-		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,10,0,1.0))
+		plankLSensor = vizproximity.addBoundingBoxSensor(plankL,scale=(1.0,18.0,1.0))
+		plankRSensor = vizproximity.addBoundingBoxSensor(plankR,scale=(1.0,18.0,1.0))
+		floorLSensor = vizproximity.addBoundingBoxSensor(floorL,scale=(1.0,18.0,1.5))
+		floorRSensor = vizproximity.addBoundingBoxSensor(floorR,scale=(1.0,18.0,1.0))
+		floorT1Sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,18.0,1.0))
+		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,18.0,1.0))
 
 	if inc == 1:
 		# rightmost wall
@@ -265,8 +265,11 @@ def loadscene(remaining, inc):
 		wallL.texture(metal)
 		
 		# destination point
-		plankL.setPosition([-5.7, -14, 14.75])
-		plankR.setPosition([-5.95, -7, -16.25])
+		plankL.setPosition([-5.95, -14, 16.25])
+		plankR.setPosition([-6.7, -7.15, -15.55])
+		
+		#plankL.setPosition([-6.7, -7.15, 15.55])
+		#plankR.setPosition([-5.95, -14, -16.25])
 		
 		texMwallTlr = vizmat.Transform()
 		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
@@ -340,33 +343,40 @@ def loadscene(remaining, inc):
 		# Platforms in front of doors
 		floorL = vizshape.addBox([8,0.5,8])
 		floorL.setEuler(45,0,0)
-		floorL.setPosition(11,-14,31.25)
+		floorL.setPosition(11.75,-14,32.5)
 		floorR = vizshape.addBox([8,0.5,8])
 		floorR.setEuler(45,0,0)
-		floorR.setPosition(9.5,0,-33.25)
+		floorR.setPosition(9.85,0,-31.)
+		
+		'''floorL = vizshape.addBox([8,0.5,8])
+		floorL.setEuler(45,0,0)
+		floorL.setPosition(9.85,0,31)
+		floorR = vizshape.addBox([8,1,8])
+		floorR.setEuler(45,0,0)
+		floorR.setPosition(11,-14,-33.25)'''
 		
 		ground.setPosition([0, -14., 0])
 		plankStart = vizshape.addBox([6,2,6])
-		plankStart.setPosition([-21.5,-14.5,0])
+		plankStart.setPosition([-22.2,-14.5,0])
+		#plankStart.setPosition([-22.2,-14.5,0])
 		plankStart.setEuler([45,0,0])
 		viz.MainView.setPosition([-20, 2, 0])
 		
 		doorL.setPosition(12.5,-11.5,29.75)
 		doorR.setPosition(12.5,2.0,-32.25)
 		
-		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,-10.5,6))
-		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(27,1.5,-6))
-		
-		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-10.5,6))
-		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,-6))
+		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,-10.5,32))
+		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
+		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,-10.5,32))
+		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
 		
 		plankStartSensor = vizproximity.addBoundingBoxSensor(plankStart,scale=(1.0,10.0,1.0))
-		plankLSensor = vizproximity.addBoundingBoxSensor(plankL,scale=(1.0,20.0,1.0))
-		plankRSensor = vizproximity.addBoundingBoxSensor(plankR,scale=(1.0,20.0,1.0))
-		floorLSensor = vizproximity.addBoundingBoxSensor(floorL,scale=(1.0,20.0,1.5))
-		floorRSensor = vizproximity.addBoundingBoxSensor(floorR,scale=(1.0,20.0,1.0))
-		floorT1Sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,20.0,1.0))
-		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,10,0,1.0))
+		plankLSensor = vizproximity.addBoundingBoxSensor(plankL,scale=(1.0,18.0,1.0))
+		plankRSensor = vizproximity.addBoundingBoxSensor(plankR,scale=(1.0,18.0,1.0))
+		floorLSensor = vizproximity.addBoundingBoxSensor(floorL,scale=(1.0,18.0,1.0))
+		floorRSensor = vizproximity.addBoundingBoxSensor(floorR,scale=(1.5,18.0,1.0))
+		floorT1Sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,18.0,1.0))
+		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,18.0,1.0))
 		
 	
 	# Add destination sensors to manager

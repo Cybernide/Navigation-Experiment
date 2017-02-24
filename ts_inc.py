@@ -18,7 +18,7 @@ import time
 
 # Assets directory
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
-
+starting_pos = [-20,-12., 0]
 
 def loadscene(remaining, inc):
 	t0 = time.time()
@@ -30,8 +30,9 @@ def loadscene(remaining, inc):
 	viz.setMultiSample(4)
 	viz.fov(80)
 	viz.go()
+	
 	# Add collision
-	#viz.collision(viz.ON)
+	viz.collision(viz.ON)
 
 	# this section is really just so I can walk around like it's a computer game
 	###########################
@@ -92,8 +93,6 @@ def loadscene(remaining, inc):
 	global plankL, plankR
 
 	#room
-
-
 	wallB = vizshape.addPlane([75, 30])
 	wallB.setPosition(-22.25, 0, 0)
 	wallB.setEuler(x=90, y=90, z=0)
@@ -120,7 +119,6 @@ def loadscene(remaining, inc):
 	
 	# I've nicknamed the next section of code:
 	# "I hate you for being right, Pythagoras"
-
 	
 	if (inc == 0):
 		#slant up
@@ -233,7 +231,8 @@ def loadscene(remaining, inc):
 		plankStart = vizshape.addBox([6,2,6])
 		plankStart.setPosition([-22.2,-14.5,0])
 		plankStart.setEuler([45,0,0])
-		viz.MainView.setPosition([-20, 2, 0])
+		viz.MainView.setPosition(starting_pos)
+		viz.MainView.setEuler(90,0,0)
 		
 		doorL.setPosition(12.5,2.0,29.75)
 		doorR.setPosition(12.5,-11.5,-32.25)
@@ -267,9 +266,6 @@ def loadscene(remaining, inc):
 		# destination point
 		plankL.setPosition([-5.95, -14, 16.25])
 		plankR.setPosition([-6.7, -7.15, -15.55])
-		
-		#plankL.setPosition([-6.7, -7.15, 15.55])
-		#plankR.setPosition([-5.95, -14, -16.25])
 		
 		texMwallTlr = vizmat.Transform()
 		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
@@ -348,19 +344,13 @@ def loadscene(remaining, inc):
 		floorR.setEuler(45,0,0)
 		floorR.setPosition(9.85,0,-31.)
 		
-		'''floorL = vizshape.addBox([8,0.5,8])
-		floorL.setEuler(45,0,0)
-		floorL.setPosition(9.85,0,31)
-		floorR = vizshape.addBox([8,1,8])
-		floorR.setEuler(45,0,0)
-		floorR.setPosition(11,-14,-33.25)'''
-		
 		ground.setPosition([0, -14., 0])
 		plankStart = vizshape.addBox([6,2,6])
 		plankStart.setPosition([-22.2,-14.5,0])
 		#plankStart.setPosition([-22.2,-14.5,0])
 		plankStart.setEuler([45,0,0])
-		viz.MainView.setPosition([-20, 2, 0])
+		viz.MainView.setPosition(starting_pos)
+		viz.MainView.setPosition(90,0,0)
 		
 		doorL.setPosition(12.5,-11.5,29.75)
 		doorR.setPosition(12.5,2.0,-32.25)

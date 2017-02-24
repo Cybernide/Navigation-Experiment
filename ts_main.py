@@ -20,7 +20,7 @@ p = ["00", "01", "02", "03", "04", "05", "10", "11",
 	"12", "13", "14", "15", "20", "21", "30", "31"]
 if __name__ == '__main__':
 	#pathcond = randint(0,2)
-	pathcond = 1
+	pathcond = 3
 	if pathcond == 0:
 		gentex = randint(0,5)
 		gentex = 5

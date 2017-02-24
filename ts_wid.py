@@ -20,7 +20,7 @@ import vizmat
 
 # Assets directory
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
-
+starting_pos = [-20, 2, 0]
 
 def loadscene(remaining, wid):
 	t0 = time.time()
@@ -34,7 +34,7 @@ def loadscene(remaining, wid):
 	viz.go()
 	
 	# Add collision
-	#viz.collision(viz.ON)
+	viz.collision(viz.ON)
 
 	# this section is really just so I can walk around like it's a computer game
 	###########################
@@ -53,7 +53,8 @@ def loadscene(remaining, wid):
 	viz.callback(viz.MOUSE_MOVE_EVENT,mousemove)
 	###################################################
 
-	viz.MainView.setPosition([-20, 2, 0])
+	viz.MainView.setPosition(starting_pos)
+	viz.MainView.setEuler(90,0,0)
 
 	#load textures
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
@@ -238,7 +239,6 @@ def loadscene(remaining, wid):
 	elif wid == 5:
 		crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (29.5,3.75),(1.3,32), (0.5,31.3), (0,31.75)]),source=viz.Matrix.translate(-22,0,-35))
 		crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,-29.1)]), source=viz.Matrix.translate(-22,0,35))
-		#crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-3.5,-29.5),(-29.35,-0.725),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 		crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-3.5,-29.5),(-31.575,-1.38),(-30.25,-0.125),(-29.5,-0.725),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 		
 	

@@ -18,7 +18,7 @@ import time
 
 # Assets directory
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
-
+starting_pos = [-20, 2, 0]
 
 def loadscene(remaining, tex):
 	t0 = time.time()
@@ -32,7 +32,7 @@ def loadscene(remaining, tex):
 	viz.go()
 	
 	# Add collision
-	#viz.collision(viz.ON)
+	viz.collision(viz.ON)
 
 	# this section is really just so I can walk around like it's a computer game
 	###########################
@@ -51,7 +51,8 @@ def loadscene(remaining, tex):
 	viz.callback(viz.MOUSE_MOVE_EVENT,mousemove)
 	###################################################
 
-	viz.MainView.setPosition([-20, 2, 0])
+	viz.MainView.setPosition(starting_pos)
+	viz.MainView.setEuler(90,0,0)
 
 	#load textures
 	stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)

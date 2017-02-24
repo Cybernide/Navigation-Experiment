@@ -19,15 +19,15 @@ results = open(flname, "a")
 p = ["00", "01", "02", "03", "04", "05", "10", "11",
 	"12", "13", "14", "15", "20", "21", "30", "31"]
 if __name__ == '__main__':
-	#pathcond = randint(0,2)9
-	pathcond = 3
+	#pathcond = randint(0,2)
+	pathcond = 1
 	if pathcond == 0:
 		gentex = randint(0,5)
 		gentex = 5
 		ts_tex.loadscene(trials, gentex)
 	elif pathcond == 1:
 		genwid = randint(0,5)
-		genwid = 5
+		genwid = 4
 		ts_wid.loadscene(trials, genwid)
 	elif pathcond == 2:
 		genfri = randint(0,1)

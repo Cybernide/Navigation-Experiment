@@ -12,7 +12,7 @@ import vizshape
 import vizfx
 #from random import randint, sample
 import vizact
-import ts_main
+#import ts_main
 import vizmat
 import time
 
@@ -20,9 +20,8 @@ import time
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
 starting_pos = [-20, 2, 0]
 
-def loadscene(remaining, tex):
+def loadscene(tex):
 	t0 = time.time()
-	
 	print "texture condition: " + str(tex)
 	viz.go()
 
@@ -240,7 +239,7 @@ def loadscene(remaining, tex):
 	vizact.onkeydown('9', deepfriedManager.setDebug,viz.TOGGLE)
 	
 	autodoor.onEnter(None,openSensame)
-	manager.onEnter(None,enterProximity,remaining,t0)
+	manager.onEnter(None,enterProximity,t0)
 	deepfriedManager.onEnter(None,friedParticipant)
 	
 def friedParticipant(event):
@@ -263,7 +262,7 @@ def openSensame(event):
 		nearRDoor = True
 		doorR.addAction(opendoor)
 	
-def enterProximity(event,tr,t0):
+def enterProximity(event,t0):
 	"""@args vizproximity.ProximityEvent()"""
 	global inLDoor, inRDoor
 	if event.sensor == lDoorSensor:
@@ -272,7 +271,7 @@ def enterProximity(event,tr,t0):
 		for child in children:
 			child.remove()
 		ts_main.getData('L',time.time()-t0)
-		ts_main.runTrials(tr)
+		#ts_main.runTrials(tr)
 
 	elif event.sensor == rDoorSensor:
 		inRDoor = True
@@ -280,4 +279,4 @@ def enterProximity(event,tr,t0):
 		for child in children:
 			child.remove()
 		ts_main.getData('R',time.time()-t0)
-		ts_main.runTrials(tr)
+		#ts_main.runTrials(tr)

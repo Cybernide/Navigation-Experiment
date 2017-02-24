@@ -347,7 +347,6 @@ def loadscene(remaining, inc):
 		ground.setPosition([0, -14., 0])
 		plankStart = vizshape.addBox([6,2,6])
 		plankStart.setPosition([-22.2,-14.5,0])
-		#plankStart.setPosition([-22.2,-14.5,0])
 		plankStart.setEuler([45,0,0])
 		viz.MainView.setPosition(starting_pos)
 		viz.MainView.setPosition(90,0,0)

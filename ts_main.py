@@ -3,22 +3,28 @@ import viz
 # infodump mode
 import vizinfo
 # planes and shapes
-from random import randint, sample
+from random import shuffle
 import os.path
-import ts_tex
-import ts_wid
-import ts_fri
-import ts_inc
+from ts_tex import loadscene
+#import ts_wid
+#import ts_fri
+#import ts_inc
 
 trials = 5
 savepath = "C:\Users\Cyan\Documents\\"
 subjid = raw_input("Enter participant ID: ")
 flname = savepath + "test_subj" + subjid + ".txt"
-global results
 results = open(flname, "a")
-p = ["00", "01", "02", "03", "04", "05", "10", "11",
-	"12", "13", "14", "15", "20", "21", "30", "31"]
-if __name__ == '__main__':
+
+		
+"""conds = ["00", "01", "02", "03", "04", "05", "10", "11", "12", "13", "14", "15", "20", "21", "30", "31"]
+shuffle(conds)
+i = 0
+for c in conds:
+	print str(c[0]) + "," + str(c[1])
+	if c[0] == "0":
+		tex = int(c[1])
+		loadscene(tex)if __name__ == '__main__':
 	#pathcond = randint(0,2)
 	pathcond = 3
 	if pathcond == 0:
@@ -61,5 +67,5 @@ def runTrials(remaining_trials):
 			ts_inc.loadscene(trials,geninc)
 	else:
 		results.close()
-		viz.quit()
+		viz.quit()"""
 		

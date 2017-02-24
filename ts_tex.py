@@ -148,7 +148,7 @@ def loadscene(remaining, tex):
 	
 	doorR = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorR.setEuler(90,0,0)
-	doorR.setPosition(12.5,2.0,-33.25)
+	doorR.setPosition(12.5,2.0,-32.5)
 
 	# change the origin and where door will rotate
 	doorL.center(0.5,0,0)
@@ -213,7 +213,7 @@ def loadscene(remaining, tex):
 	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
 	crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
 	crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
-	crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0,-28),(-1.25,-27.25),(-2.0,-28),(-30,0),(-2.0,28),(-1.25,27.25),(0,28)]), source=viz.Matrix.translate(12.25,0,0))
+	crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-2.0,-28),(-30,0),(-2.0,28),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 
 	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
 	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
@@ -243,7 +243,6 @@ def loadscene(remaining, tex):
 	deepfriedManager.onEnter(None,friedParticipant)
 	
 def friedParticipant(event):
-	
 	global crispy
 	print str(crispy)
 	if event.sensor == crispySensor1:

@@ -148,7 +148,7 @@ def loadscene(remaining, fri):
 	
 	doorR = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
 	doorR.setEuler(90,0,0)
-	doorR.setPosition(12.5,2.0,-33.25)
+	doorR.setPosition(12.5,2.0,-32.5)
 
 	#change the origin and where door will rotate
 	doorL.center(0.5,0,0)
@@ -179,20 +179,25 @@ def loadscene(remaining, fri):
 	plankStart.setEuler([45,0,0])
 	
 	# Sensors for doors
-	global inLDoor, inRDoor, nearLDoor, nearRDoor
+	global inLDoor, inRDoor, nearLDoor, nearRDoor,crispy
 	inLDoor = False
 	inRDoor = False
 	nearLDoor = False
 	nearRDoor = False
+	crispy = False
 	
 	#Create proximity manager 
 	manager = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
+	deepfriedManager = vizproximity.Manager()
 
 	# Proximity sensor
-	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor
+	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor, crispySensor1, crispySensor2, crispySensor3
 	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
 	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
+	crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
+	crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
+	crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-2.0,-28),(-30,0),(-2.0,28),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 	
 	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
 	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
@@ -201,19 +206,35 @@ def loadscene(remaining, fri):
 	target = vizproximity.Target(viz.MainView)
 	manager.addTarget(target)
 	autodoor.addTarget(target)
+	deepfriedManager.addTarget(target)
 
 	# Add destination sensors to manager
 	manager.addSensor(lDoorSensor)
 	manager.addSensor(rDoorSensor)
 	autodoor.addSensor(lDoorOpenSensor)
 	autodoor.addSensor(rDoorOpenSensor)
+	deepfriedManager.addSensor(crispySensor1)
+	deepfriedManager.addSensor(crispySensor2)
+	deepfriedManager.addSensor(crispySensor3)
 
 	# Toggle debug shapes with keypress 
 	vizact.onkeydown('l',manager.setDebug,viz.TOGGLE)
 	vizact.onkeydown('o', autodoor.setDebug,viz.TOGGLE)
+	vizact.onkeydown('9', deepfriedManager.setDebug,viz.TOGGLE)
 	
 	autodoor.onEnter(None,openSensame)
 	manager.onEnter(None,enterProximity,remaining,t0)
+	deepfriedManager.onEnter(None,friedParticipant)
+	
+def friedParticipant(event):
+	global crispy
+	print str(crispy)
+	if event.sensor == crispySensor1:
+		crispy = True
+		print str(crispy)
+	if event.sensor == crispySensor2:
+		crispy = True
+		print str(crispy)
 	
 def openSensame(event):
 	global nearLDoor, nearRDoor

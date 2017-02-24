@@ -66,23 +66,27 @@ def loadscene(remaining, inc):
 	ground.texture(lava)
 	ground.setScale(1.5,0,1.5)
 	
-	global inLDoor, inRDoor, nearLDoor, nearRDoor
+	global inLDoor, inRDoor, nearLDoor, nearRDoor,crispy
 	inLDoor = False
 	inRDoor = False
 	nearLDoor = False
 	nearRDoor = False
+	crispy = False
 	
 	#Create proximity manager 
 	manager = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
+	crispyManager = vizproximity.Manager()
 
 	# Proximity sensor
-	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor
+	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor, plankLSensor, plankRSensor, \
+	plankStartSensor, floorLSensor, floorRSensor, floorT1Sensor, floorT2Sensor
 	
 	# Add main viewpoint as proximity target 
 	target = vizproximity.Target(viz.MainView)
 	manager.addTarget(target)
 	autodoor.addTarget(target)
+	crispyManager.addTarget(target)
 
 	
 	global plankL, plankR
@@ -239,8 +243,15 @@ def loadscene(remaining, inc):
 		
 		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-10.5,6))
 		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,-6))
-
 		
+		plankStartSensor = vizproximity.addBoundingBoxSensor(plankStart,scale=(1.0,10.0,1.0))
+		plankLSensor = vizproximity.addBoundingBoxSensor(plankL,scale=(1.0,20.0,1.0))
+		plankRSensor = vizproximity.addBoundingBoxSensor(plankR,scale=(1.0,20.0,1.0))
+		floorLSensor = vizproximity.addBoundingBoxSensor(floorL,scale=(1.0,20.0,1.5))
+		floorRSensor = vizproximity.addBoundingBoxSensor(floorR,scale=(1.0,20.0,1.0))
+		floorT1Sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,20.0,1.0))
+		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,10,0,1.0))
+
 	if inc == 1:
 		# rightmost wall
 		wallR = vizshape.addPlane([75, 30])
@@ -340,7 +351,6 @@ def loadscene(remaining, inc):
 		plankStart.setEuler([45,0,0])
 		viz.MainView.setPosition([-20, 2, 0])
 		
-		
 		doorL.setPosition(12.5,-11.5,29.75)
 		doorR.setPosition(12.5,2.0,-32.25)
 		
@@ -350,6 +360,13 @@ def loadscene(remaining, inc):
 		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,-10.5,6))
 		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(22,1.5,-6))
 		
+		plankStartSensor = vizproximity.addBoundingBoxSensor(plankStart,scale=(1.0,10.0,1.0))
+		plankLSensor = vizproximity.addBoundingBoxSensor(plankL,scale=(1.0,20.0,1.0))
+		plankRSensor = vizproximity.addBoundingBoxSensor(plankR,scale=(1.0,20.0,1.0))
+		floorLSensor = vizproximity.addBoundingBoxSensor(floorL,scale=(1.0,20.0,1.5))
+		floorRSensor = vizproximity.addBoundingBoxSensor(floorR,scale=(1.0,20.0,1.0))
+		floorT1Sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,20.0,1.0))
+		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,10,0,1.0))
 		
 	
 	# Add destination sensors to manager
@@ -357,14 +374,35 @@ def loadscene(remaining, inc):
 	manager.addSensor(rDoorSensor)
 	autodoor.addSensor(lDoorOpenSensor)
 	autodoor.addSensor(rDoorOpenSensor)
-
+	crispyManager.addSensor(plankStartSensor)
+	crispyManager.addSensor(plankLSensor)
+	crispyManager.addSensor(plankRSensor)
+	crispyManager.addSensor(floorLSensor)
+	crispyManager.addSensor(floorRSensor)
+	crispyManager.addSensor(floorT1Sensor)
+	crispyManager.addSensor(floorT2Sensor)
+	
 	# Toggle debug shapes with keypress 
 	vizact.onkeydown('l',manager.setDebug,viz.TOGGLE)
 	vizact.onkeydown('o', autodoor.setDebug,viz.TOGGLE)
+	vizact.onkeydown('9', crispyManager.setDebug,viz.TOGGLE)
 	
 	autodoor.onEnter(None,openSensame)
 	manager.onEnter(None,enterProximity,remaining,t0)
+	crispyManager.onEnter(None,deepfriedEnter)
+	crispyManager.onExit(None,deepfriedExit)
 	
+def deepfriedEnter(event):
+	global crispy
+	if crispy == True:
+		crispy = False
+def deepfriedExit(event):
+	global crispy
+	if crispy == False:
+		crispy = True
+	elif crispy == True:
+		print "you ded!"
+		
 def openSensame(event):
 	global nearLDoor, nearRDoor
 	opendoor = vizact.spinto([0,1,0, 181], 360)

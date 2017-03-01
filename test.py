@@ -1,67 +1,25 @@
-﻿""" 
-This script demonstrates the various kinds of 
-area shapes included with the vizproximity module. 
-Use the WASD keys to move the axes and trigger the sensors. 
-""" 
-import viz
-import vizcam
-import vizshape
-import vizproximity
+﻿import viz
+import viztask
 viz.go()
-viz.fov(60)
 
-import vizinfo
-vizinfo.InfoPanel()
+viz.add('dojo.osgb')
 
-# Add axes controlled by keyboard
-axis = vizshape.addAxes(length=0.5)
-tracker = vizcam.addKeyboardPos()
-viz.link(tracker,axis)
+def ZoomTask():
 
-# Create manager tracked axes
-manager = vizproximity.Manager()
-manager.setDebug(True)
-manager.addTarget(vizproximity.Target(tracker))
+    viz.fov(60)
 
-# Sensor callbacks
-def onEnterSensor(e):
-    print 'Entered',e.sensor.name
+    zoom_in = vizact.mix(60, 20, time=0.5, interpolate=vizact.easeOutStrong)
+    zoom_out = vizact.mix(20, 60, time=0.5, interpolate=vizact.easeOutStrong)
 
-def onExitSensor(e):
-    print 'Exited',e.sensor.name
+    while True:
 
-manager.onEnter(None, onEnterSensor)
-manager.onExit(None, onExitSensor)
+        yield viztask.waitKeyDown(' ')
 
-def AddSensor(shape,name):
-    sensor = vizproximity.Sensor(shape,None)
-    sensor.name = name
-    manager.addSensor(sensor)
+        yield viztask.waitCall(viz.fov,zoom_in)
 
-# Add circle area
-shape = vizproximity.CircleArea(0.5,center=[0,2])
-AddSensor(shape,'Circle')
+        yield viztask.waitKeyDown(' ')
 
-# Add rectangle area
-shape = vizproximity.RectangleArea([2,1],center=[3,2])
-AddSensor(shape,'Rectangle')
+        yield viztask.waitCall(viz.fov,zoom_out)
 
-# Add polygon area
-verts = [ (0,0), (1,1), (0,1.5), (-2,2), (-1,1), (-2,0.5) ]
-shape = vizproximity.PolygonArea(verts,offset=[-3,1])
-AddSensor(shape,'Polygon')
 
-# Add path area
-path = [ (0,0), (0,1), (1,2), (0,3), (-0.5,3), (-1,3), (-1,2) ]
-shape = vizproximity.PathArea(path,radius=0.4,offset=[0,3.5])
-AddSensor(shape,'Path')
-
-# Setup environment
-vizshape.addGrid(color=[0.2]*3,pos=(0,-0.01,0))
-viz.clearcolor(viz.GRAY)
-
-# Setup pivot navigation
-import vizcam
-cam = vizcam.PivotNavigate(distance=10,center=(0,0,3))
-cam.rotateUp(60)
-viz.cam.setHandler(cam)
+viztask.schedule( ZoomTask() )

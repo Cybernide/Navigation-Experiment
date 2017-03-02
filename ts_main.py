@@ -1,32 +1,22 @@
-﻿# standard Vizard library
-import viz
-# infodump mode
+﻿import viz
 import vizinfo
-# planes and shapes
-from random import shuffle
-import os.path
-# proximity sensing library
 import vizproximity
-# 'quests' library
 import viztask
-# planes and shapes
 import vizshape
-# lighting effects
 import vizfx
-#from random import randint, sample
 import vizact
 import vizmat
 import vizcam
 import time
+import os.path
+from random import shuffle
 
 savepath = "C:\Users\Cyan\Documents\\"
 subjid = raw_input("Enter participant ID: ")
 flname = savepath + "test_subj" + subjid + ".txt"
 results = open(flname, "a")
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
-starting_pos = [-20, 2, 0]
 t0 = time.time()
-global runningTrial
 
 #set graphic parameters
 viz.setMultiSample(4)
@@ -35,8 +25,6 @@ viz.fov(80)
 # Add collision
 viz.collision(viz.ON)
 
-
-
 #load textures
 stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
 tile = viz.addTexture('images/tile_slate.jpg', wrap=viz.REPEAT)
@@ -44,23 +32,22 @@ metal = viz.addTexture('metal.jpg', wrap=viz.REPEAT)
 lava = viz.addTexture('lava.png', wrap=viz.REPEAT)
 
 # Add white point light 
-#light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
+# light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
 
-
-
-
-	
 def getData(choice, finish_time):
 	global results
 	results.write("\n" + choice + "," + str(finish_time))
 		
 		
 def loadBaseScene():
+	"""Set up the scene for width, friction and texture conditions"""
+	starting_pos = [-20, 2, 0]
 	# Add ground
 	ground = viz.addChild('ground.osgb')
 	ground.texture(lava)
 	ground.setScale(1.5,0,1.5)
-	# this section is really just so I can walk around like it's a computer game
+
+	# Computer game controls
 	viz.cam.setHandler(vizcam.KeyboardCamera(forward='w',backward='s', left='a',right='d',turnRight='e',turnLeft='q'))
 	view = viz.MainView
 	def mousemove(e):
@@ -71,192 +58,222 @@ def loadBaseScene():
 		euler[2] = 0
 		view.setEuler(euler,viz.HEAD_ORI)
 	viz.callback(viz.MOUSE_MOVE_EVENT,mousemove)
-	#viz.go()
+
 	viz.MainView.setPosition(starting_pos)
 	viz.MainView.setEuler(90,0,0)
 
-	global plankL, plankR
+	global plankl, plankr
+
 	# Room setup
-	wallR = vizshape.addPlane([75, 30])
-	wallR.setPosition(10,0,-35)
-	wallR.setEuler(x=0, y=90, z=0)
-	wallR.texture(metal)
 
-	wallL = vizshape.addPlane([75,30])
-	wallL.setPosition(10,0,35)
-	wallL.setEuler(x=0, y=-90, z=0)
-	wallL.texture(metal)
-
-	wallB = vizshape.addPlane([75, 30])
-	wallB.setPosition(-22.25, 0, 0)
-	wallB.setEuler(x=90, y=90, z=0)
-	wallB.texture(metal)
-	
+	# Main areas: R, L, back wall and ceiling, respectively
+	wall_r = vizshape.addPlane([75, 30])
+	wall_r.setPosition(10,0,-35)
+	wall_r.setEuler(x=0, y=90, z=0)
+	wall_r.texture(metal)
+	wall_l = vizshape.addPlane([75,30])
+	wall_l.setPosition(10,0,35)
+	wall_l.setEuler(x=0, y=-90, z=0)
+	wall_l.texture(metal)
+	wall_b = vizshape.addPlane([75, 30])
+	wall_b.setPosition(-22.25, 0, 0)
+	wall_b.setEuler(x=90, y=90, z=0)
+	wall_b.texture(metal)
 	ceiling = vizshape.addPlane([75,75])
 	ceiling.setEuler(0, 180, 0)
 	ceiling.setPosition(15,10, 0)
 	ceiling.texture(metal)
 	
-	texMwallTlr = vizmat.Transform()
-	texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
+	# Texture matrix for small walls on L and R of doors
+	tex_mwall_tlr = vizmat.Transform()
+	tex_mwall_tlr.setScale([1*0.35,2.5*0.4,1*0.35])
+
+	# Texture matrix for centre wall between doors
+	tex_mwall_tc = vizmat.Transform()
+	tex_mwall_tc.setScale([1,1,1.3])
+
+	# Texture wrapping mode
+	tile.wrap(viz.WRAP_T, viz.REPEAT)
+	tile.wrap(viz.WRAP_S, viz.REPEAT)
+
+	# Floor/wall in the target area
+	wall_tf = vizshape.addBox([25,0.5,75])
+	wall_tf.setPosition(25,0,0)
 	
-	texMwallTc = vizmat.Transform()
-	texMwallTc.setScale( [1,1,1.3] )
+	# Landing area in front of the doors
+	floor_l = vizshape.addBox([8,0.5,8])
+	floor_l.setEuler(45,0,0)
+	floor_l.setPosition(11,0,33.25)
+	floor_r = vizshape.addBox([8,0.5,8])
+	floor_r.setEuler(45,0,0)
+	floor_r.setPosition(11,0,-33.25)
 	
+	# Top wall in target area
+	wall_tt = vizshape.addBox([25,6,75])
+	wall_tt.setEuler(0,0,0)
+	wall_tt.setPosition(25,7,0)
+	wall_tt.texture(metal)
+	
+	# Target area, left wall
+	wall_tl = vizshape.addBox([0.25,7.5,3])
+	wall_tl.setEuler(0,0,0)
+	wall_tl.setPosition(12.75,0.5,33.75)
+	wall_tl.texmat(tex_mwall_tlr)
+	wall_tl.texture(tile)
+	
+	# Target area, right wall
+	wall_tr = vizshape.addBox([0.25,7.5,3])
+	wall_tr.setEuler(0,0,0)
+	wall_tr.setPosition(12.75,0.5,-33.75)	
+	wall_tr.texmat(tex_mwall_tlr)
+	wall_tr.texture(tile)
+	
+	# Texture wrap mode
 	tile.wrap(viz.WRAP_T, viz.REPEAT)
 	tile.wrap(viz.WRAP_S, viz.REPEAT)
 	
-	wallTF = vizshape.addBox([25,0.5,75])
-	wallTF.setPosition(25,0,0)
+	# Centre wall on target area
+	wall_tc = vizshape.addBox([0.25,7.5,60.5])
+	wall_tc.setEuler(0,0,0)
+	wall_tc.setPosition(12.75,0.5,0.0)
+	wall_tc.texmat(tex_mwall_tc)
+	wall_tc.texture(tile)
 	
-	floorL = vizshape.addBox([8,0.5,8])
-	floorL.setEuler(45,0,0)
-	floorL.setPosition(11,0,33.25)
-	floorR = vizshape.addBox([8,0.5,8])
-	floorR.setEuler(45,0,0)
-	floorR.setPosition(11,0,-33.25)
-	
-	wallTT = vizshape.addBox([25,6,75])
-	wallTT.setEuler(0,0,0)
-	wallTT.setPosition(25,7,0)
-	wallTT.texture(metal)
-	
-	wallTl = vizshape.addBox([0.25,7.5,3])
-	wallTl.setEuler(0,0,0)
-	wallTl.setPosition(12.75,0.5,33.75)
-	wallTl.texmat(texMwallTlr)
-	wallTl.texture(tile)
-	
-	wallTr = vizshape.addBox([0.25,7.5,3])
-	wallTr.setEuler(0,0,0)
-	wallTr.setPosition(12.75,0.5,-33.75)	
-	wallTr.texmat(texMwallTlr)
-	wallTr.texture(tile)
-	
-	tile.wrap(viz.WRAP_T, viz.REPEAT)
-	tile.wrap(viz.WRAP_S, viz.REPEAT)
-	
-	wallTc = vizshape.addBox([0.25,7.5,60.5])
-	wallTc.setEuler(0,0,0)
-	wallTc.setPosition(12.75,0.5,0.0)
-	wallTc.texmat(texMwallTc)
-	wallTc.texture(tile)
-	
-	wallTb = vizshape.addPlane([75,4])
-	wallTb.setPosition(35, 2, 0)
-	wallTb.setEuler(x=90, y=270, z=0)
+	# Back wall of target area (only visible on entering)
+	wall_tb = vizshape.addPlane([75,4])
+	wall_tb.setPosition(35, 2, 0)
+	wall_tb.setEuler(x=90, y=270, z=0)
 	
 def loadTextureConditions(tex):
-	global doorL, doorR
-	
-	doorL = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
-	doorL.setEuler(90,0,0)
-	doorL.setPosition(12.5,2.0,29.75)
-	
-	doorR = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
-	doorR.setEuler(90,0,0)
-	doorR.setPosition(12.5,2.0,-32.5)
+	"""Set up paths for a texture condition trial.
+	@args:
+		tex (int): the parameter determining the exact condition
+		for this trial.
 
-	# change the origin and where door will rotate
-	doorL.center(0.5,0,0)
-	doorR.center(0.5,0,0)
+	"""
+	global door_l, door_r
 	
-	#Make paths
-	model_plankL = "p_mid_"
-	model_plankR = "p_mid_"
+	# Left and right doors, respectively
+	door_l = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_l.setEuler(90,0,0)
+	door_l.setPosition(12.5,2.0,29.75)
+	door_r = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_r.setEuler(90,0,0)
+	door_r.setPosition(12.5,2.0,-32.5)
+
+	# Change the origin and where door will rotate
+	door_l.center(0.5,0,0)
+	door_r.center(0.5,0,0)
+	
+	# Make paths
+	model_plankl = "p_mid_"
+	model_plankr = "p_mid_"
 	
 	'''
-	#texture conditions
+	# Texture conditions
 	0. Lrubber, Rstone
 	1. Lstone, Rrubber
 	2. Lrubber, Rgravel
 	3. Lgravel, Rrubber
 	4. Lstone, Rgravel
-	5. Lgravel, Rstone;
+	5. Lgravel, Rstone
+	
 	'''
 	if (tex == 0) or (tex == 2):
-		model_plankL = model_plankL + "rubber"
+		model_plankl = model_plankl + "rubber"
 	elif (tex == 1) or (tex == 4) or (tex == 6):
-		model_plankL = model_plankL + "stone"
+		model_plankl = model_plankl + "stone"
 	elif (tex == 3) or (tex == 5):
-		model_plankL = model_plankL + "gravel"
+		model_plankl = model_plankl + "gravel"
 		
 	if (tex == 0) or (tex == 5) or (tex == 6):
-		model_plankR = model_plankR + "stone"
+		model_plankr = model_plankr + "stone"
 	elif (tex == 1) or (tex == 3):
-		model_plankR = model_plankR + "rubber"
+		model_plankr = model_plankr + "rubber"
 	elif (tex == 4) or (tex == 2):
-		model_plankR = model_plankR + "gravel"
+		model_plankr = model_plankr + "gravel"
 	
-	plankL = vizfx.addChild(asset_dir + model_plankL + ".osgb")
-	plankR = vizfx.addChild(asset_dir + model_plankR + ".osgb")
+	plankl = vizfx.addChild(asset_dir + model_plankl + ".osgb")
+	plankr = vizfx.addChild(asset_dir + model_plankr + ".osgb")
 	
-	plankL.setPosition([-5.95, -0.25, 16.25])
-	plankL.setEuler([45,0,0])
-	plankR.setPosition([-5.95, -0.25, -16.25])
-	plankR.setEuler([135,0,0])
+	plankl.setPosition([-5.95, -0.25, 16.25])
+	plankl.setEuler([45,0,0])
+	plankr.setPosition([-5.95, -0.25, -16.25])
+	plankr.setEuler([135,0,0])
 	
 	# initialize starting plane
-	plankStart = vizshape.addBox([5,0.5,5])
-	plankStart.setPosition([-21.5,0,0])
-	plankStart.setEuler([45,0,0])
+	plankstart = vizshape.addBox([5,0.5,5])
+	plankstart.setPosition([-21.5,0,0])
+	plankstart.setEuler([45,0,0])
 	t0 = time.time()
 	
 def loadFrictionConditions(fri):
-	# Door setup
-	global doorL, doorR
-	
-	doorL = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
-	doorL.setEuler(90,0,0)
-	doorL.setPosition(12.5,2.0,29.75)
-	
-	doorR = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
-	doorR.setEuler(90,0,0)
-	doorR.setPosition(12.5,2.0,-32.5)
+	"""Set up paths for a friction condition trial.
+	@args:
+		fri (int): the parameter determining the exact friction
+		condition for this trial.
 
-	#change the origin and where door will rotate
-	doorL.center(0.5,0,0)
-	doorR.center(0.5,0,0)
+	"""
+	# Left and right doors, respectively
+	global door_l, door_r
 	
-	# Initialize paths
-	plankL = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
-	plankR = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
+	door_l = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_l.setEuler(90,0,0)
+	door_l.setPosition(12.5,2.0,29.75)
+	door_r = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_r.setEuler(90,0,0)
+	door_r.setPosition(12.5,2.0,-32.5)
+
+	# Change the origin and where door will rotate
+	door_l.center(0.5,0,0)
+	door_r.center(0.5,0,0)
+	
+	# Make paths
+	plankl = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
+	plankr = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
 	
 	'''
-	#friction conditions
+	# Friction conditions
 	0. Lshiny, Rmatte
 	1. Lmatte, Rshiny
+	
 	'''
 	if (fri == 0):
-		plankL.specular(0.3, 0.3, 0.3)
+		plankl.specular(0.3, 0.3, 0.3)
 	elif (fri == 1):
-		plankR.specular(0.3, 0.3, 0.3)
+		plankr.specular(0.3, 0.3, 0.3)
 	
-	plankL.setPosition([-5.95, -0.25, 16.25])
-	plankL.setEuler([45,0,0])
-	plankR.setPosition([-5.95, -0.25, -16.25])
-	plankR.setEuler([135,0,0])
+	plankl.setPosition([-5.95, -0.25, 16.25])
+	plankl.setEuler([45,0,0])
+	plankr.setPosition([-5.95, -0.25, -16.25])
+	plankr.setEuler([135,0,0])
 	
 	# initialize starting plane
-	plankStart = vizshape.addBox([5,0.5,5])
-	plankStart.setPosition([-21.5,0,0])
-	plankStart.setEuler([45,0,0])
+	plankstart = vizshape.addBox([5,0.5,5])
+	plankstart.setPosition([-21.5,0,0])
+	plankstart.setEuler([45,0,0])
 	t0 = time.time()
 	
 def loadWidthGeometry(wid):
-	global doorL, doorR
+	"""Set up paths for a geometry condition trial.
+	@args:
+		wid (int): the parameter determining the exact width condition
+		for this trial.
+
+	"""
+	global door_l, door_r
 	
-	doorL = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
-	doorL.setEuler(90,0,0)
-	doorL.setPosition(12.5,2.0,29.75)
-	
-	doorR = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
-	doorR.setEuler(90,0,0)
-	doorR.setPosition(12.5,2.0,-32.5)
+	# Left and right doors, respectively
+	door_l = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_l.setEuler(90,0,0)
+	door_l.setPosition(12.5,2.0,29.75)
+	door_r = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_r.setEuler(90,0,0)
+	door_r.setPosition(12.5,2.0,-32.5)
 
 	#change the origin and where door will rotate
-	doorL.center(0.5,0,0)
-	doorR.center(0.5,0,0)
+	door_l.center(0.5,0,0)
+	door_r.center(0.5,0,0)
 	
 	'''
 	Width conditions:
@@ -267,40 +284,40 @@ def loadWidthGeometry(wid):
 	4. L0.5x, R2x
 	5. L2x, R0.5x
 	#6 possibilities
+	
 	'''
 	# initialize width of first plane
 	if (wid == 0) or (wid == 4):
-		model_plankL = "p_nar_rubber"
+		model_plankl = "p_nar_rubber"
 	if (wid == 2) or (wid == 5):
-		model_plankL = "p_wid_rubber"
+		model_plankl = "p_wid_rubber"
 	elif (wid == 1) or (wid == 3) or (wid == 6):
-		model_plankL = "p_mid_rubber"
+		model_plankl = "p_mid_rubber"
 
 	# initialize width of second plane
 	if (wid == 1) or (wid == 5):
-		model_plankR = "p_nar_rubber"
+		model_plankr = "p_nar_rubber"
 	if (wid == 3) or (wid == 4):
-		model_plankR = "p_wid_rubber"
+		model_plankr = "p_wid_rubber"
 	elif (wid == 0) or (wid == 2) or (wid == 6):
-		model_plankR = "p_mid_rubber"
+		model_plankr = "p_mid_rubber"
 		
-		
-	plankL = vizfx.addChild(asset_dir + model_plankL + ".osgb")
-	plankR = vizfx.addChild(asset_dir + model_plankR + ".osgb")
+	plankl = vizfx.addChild(asset_dir + model_plankl + ".osgb")
+	plankr = vizfx.addChild(asset_dir + model_plankr + ".osgb")
 	
-	plankL.setPosition([-5.95, -0.25, 16.25])
-	plankL.setEuler([45,0,0])
-	plankR.setPosition([-5.95, -0.25, -16.25])
-	plankR.setEuler([135,0,0])
+	plankl.setPosition([-5.95, -0.25, 16.25])
+	plankl.setEuler([45,0,0])
+	plankr.setPosition([-5.95, -0.25, -16.25])
+	plankr.setEuler([135,0,0])
 	
 	# initialize starting plane
-	plankStart = vizshape.addBox([5,0.5,5])
-	plankStart.setPosition([-21.5,0,0])
-	plankStart.setEuler([45,0,0])
+	plankstart = vizshape.addBox([5,0.5,5])
+	plankstart.setPosition([-21.5,0,0])
+	plankstart.setEuler([45,0,0])
 	
-	global inLDoor, inRDoor, nearLDoor, nearRDoor,crispy
-	inLDoor = False
-	inRDoor = False
+	global inldoor, inrdoor, nearLDoor, nearRDoor,crispy
+	inldoor = False
+	inrdoor = False
 	nearLDoor = False
 	nearRDoor = False
 	crispy = False
@@ -311,37 +328,37 @@ def loadWidthGeometry(wid):
 	deepfriedManager = vizproximity.Manager()
 
 	# Proximity sensor
-	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor, crispySensor1, crispySensor2, crispySensor3
-	#crispySensor2, crispySensor3
-	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
-	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
-	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
-	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
+	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor, crispy_sensor1, crispy_sensor2, crispy_sensor3
+	#crispy_sensor2, crispy_sensor3
+	ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
+	rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
+	ldoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
+	rdoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
 	
 	if wid == 0:
-		crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
-		crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (29.5,-3.75),(1.3,-32), (0.5,-31.3), (0,-31.75)]), source=viz.Matrix.translate(-22,0,35))
-		crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-2.0,-28),(-31.55,1.4),(-3.5,29.5),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
+		crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
+		crispy_sensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (29.5,-3.75),(1.3,-32), (0.5,-31.3), (0,-31.75)]), source=viz.Matrix.translate(-22,0,35))
+		crispy_sensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-2.0,-28),(-31.55,1.4),(-3.5,29.5),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 	elif wid == 1:
-		crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (29.5,3.75),(1.3,32), (0.5,31.3), (0,31.75)]),source=viz.Matrix.translate(-22,0,-35))
-		crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
-		crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-3.5,-29.5),(-31.55,-1.4),(-2.,28),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
+		crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (29.5,3.75),(1.3,32), (0.5,31.3), (0,31.75)]),source=viz.Matrix.translate(-22,0,-35))
+		crispy_sensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
+		crispy_sensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-3.5,-29.5),(-31.55,-1.4),(-2.,28),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 	elif wid == 2:
-		crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
-		crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,-29.1)]), source=viz.Matrix.translate(-22,0,35))
-		crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-2.0,-28),(-29.35,-0.725),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
+		crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
+		crispy_sensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,-29.1)]), source=viz.Matrix.translate(-22,0,35))
+		crispy_sensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-2.0,-28),(-29.35,-0.725),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 	elif wid == 3:
-		crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,29.1)]),source=viz.Matrix.translate(-22,0,-35))
-		crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
-		crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-29.35,0.725),(-2.,28),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
+		crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,29.1)]),source=viz.Matrix.translate(-22,0,-35))
+		crispy_sensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
+		crispy_sensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-29.35,0.725),(-2.,28),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 	elif wid == 4:
-		crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,29.1)]),source=viz.Matrix.translate(-22,0,-35))
-		crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (29.5,-3.75),(1.3,-32), (0.5,-31.3), (0,-31.75)]), source=viz.Matrix.translate(-22,0,35))
-		crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-29.5,0.725),(-30.25,0.125),(-31.575,1.38),(-3.5,29.5),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
+		crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,29.1)]),source=viz.Matrix.translate(-22,0,-35))
+		crispy_sensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (29.5,-3.75),(1.3,-32), (0.5,-31.3), (0,-31.75)]), source=viz.Matrix.translate(-22,0,35))
+		crispy_sensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-29.5,0.725),(-30.25,0.125),(-31.575,1.38),(-3.5,29.5),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 	elif wid == 5:
-		crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (29.5,3.75),(1.3,32), (0.5,31.3), (0,31.75)]),source=viz.Matrix.translate(-22,0,-35))
-		crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,-29.1)]), source=viz.Matrix.translate(-22,0,35))
-		crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-3.5,-29.5),(-31.575,-1.38),(-30.25,-0.125),(-29.5,-0.725),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
+		crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (29.5,3.75),(1.3,32), (0.5,31.3), (0,31.75)]),source=viz.Matrix.translate(-22,0,-35))
+		crispy_sensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(0,-29.1)]), source=viz.Matrix.translate(-22,0,35))
+		crispy_sensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-3.5,-29.5),(-31.575,-1.38),(-30.25,-0.125),(-29.5,-0.725),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 
 	# Add main viewpoint as proximity target 
 	target = vizproximity.Target(viz.MainView)
@@ -350,13 +367,13 @@ def loadWidthGeometry(wid):
 	deepfriedManager.addTarget(target)
 
 	# Add destination sensors to manager
-	goal.addSensor(lDoorSensor)
-	goal.addSensor(rDoorSensor)
-	autodoor.addSensor(lDoorOpenSensor)
-	autodoor.addSensor(rDoorOpenSensor)
-	deepfriedManager.addSensor(crispySensor1)
-	deepfriedManager.addSensor(crispySensor2)
-	deepfriedManager.addSensor(crispySensor3)
+	goal.addSensor(ldoor_sensor)
+	goal.addSensor(rdoor_sensor)
+	autodoor.addSensor(ldoor_open_sensor)
+	autodoor.addSensor(rdoor_open_sensor)
+	deepfriedManager.addSensor(crispy_sensor1)
+	deepfriedManager.addSensor(crispy_sensor2)
+	deepfriedManager.addSensor(crispy_sensor3)
 
 	# Toggle debug shapes with keypress 
 	vizact.onkeydown('l',goal.setDebug,viz.TOGGLE)
@@ -365,10 +382,14 @@ def loadWidthGeometry(wid):
 	t0 = time.time()
 	
 def sensorSetup():
+	"""Initialize the proximity sensors for texture, width and 
+	friction conditions.
+	
+	"""
 	# Set up door opening and 'in' sensors
-	global inLDoor, inRDoor, nearLDoor, nearRDoor, crispy
-	inLDoor = False
-	inRDoor = False
+	global inldoor, inrdoor, nearLDoor, nearRDoor, crispy
+	inldoor = False
+	inrdoor = False
 	nearLDoor = False
 	nearRDoor = False
 	crispy = False
@@ -380,15 +401,15 @@ def sensorSetup():
 	deepfriedManager = vizproximity.Manager()
 
 	# Proximity sensors
-	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor, crispySensor1, crispySensor2, crispySensor3
-	lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
-	rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
-	crispySensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
-	crispySensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
-	crispySensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-2.0,-28),(-30,0),(-2.0,28),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
+	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor, crispy_sensor1, crispy_sensor2, crispy_sensor3
+	ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
+	rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
+	crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
+	crispy_sensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (28.,-2.5),(0,-30.5)]), source=viz.Matrix.translate(-22,0,35))
+	crispy_sensor3 = vizproximity.Sensor(vizproximity.PolygonArea([(0.15,-28.8),(-1.25,-27.5),(-2.0,-28),(-30,0),(-2.0,28),(-1.25,27.5),(0.15,28.8)]), source=viz.Matrix.translate(12.25,0,0))
 
-	lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
-	rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
+	ldoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
+	rdoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
 
 	# Add main viewpoint as proximity target 
 	target = vizproximity.Target(viz.MainView)
@@ -397,13 +418,13 @@ def sensorSetup():
 	deepfriedManager.addTarget(target)
 
 	# Add destination sensors to manager
-	goal.addSensor(lDoorSensor)
-	goal.addSensor(rDoorSensor)
-	autodoor.addSensor(lDoorOpenSensor)
-	autodoor.addSensor(rDoorOpenSensor)
-	deepfriedManager.addSensor(crispySensor1)
-	deepfriedManager.addSensor(crispySensor2)
-	deepfriedManager.addSensor(crispySensor3)
+	goal.addSensor(ldoor_sensor)
+	goal.addSensor(rdoor_sensor)
+	autodoor.addSensor(ldoor_open_sensor)
+	autodoor.addSensor(rdoor_open_sensor)
+	deepfriedManager.addSensor(crispy_sensor1)
+	deepfriedManager.addSensor(crispy_sensor2)
+	deepfriedManager.addSensor(crispy_sensor3)
 
 	# Toggle debug shapes with keypress 
 	vizact.onkeydown('l',goal.setDebug,viz.TOGGLE)
@@ -415,94 +436,117 @@ def sensorSetup():
 	deepfriedManager.onEnter(None,friedParticipant)
 	
 def loadInclineParam(inc):
-	global inLDoor, inRDoor, nearLDoor, nearRDoor,crispy, goal
-	inLDoor = False
-	inRDoor = False
+	"""Set up a trial where the condition is between inclines."""
+	
+	# Computer game controls
+	viz.cam.setHandler(vizcam.KeyboardCamera(forward='w',backward='s', left='a',right='d',turnRight='e',turnLeft='q'))
+	view = viz.MainView
+	def mousemove(e):
+		euler = view.get(viz.HEAD_EULER)
+		euler[0] += e.dx*0.1
+		euler[1] += -e.dy*0.1
+		euler[1] = viz.clamp(euler[1],-90.0,90.0)
+		euler[2] = 0
+		view.setEuler(euler,viz.HEAD_ORI)
+	viz.callback(viz.MOUSE_MOVE_EVENT,mousemove)
+	
+	viz.MainView.setPosition([-20, -10, 0])
+	viz.MainView.setEuler(90,0,0)
+	
+	# Add ground
+	ground = viz.addChild('ground.osgb')
+	ground.texture(lava)
+	ground.setScale(1.5,0,1.5)
+	global inldoor, inrdoor, nearLDoor, nearRDoor,crispy, goal
+
+	# Set up sensors
+	inldoor = False
+	inrdoor = False
 	nearLDoor = False
 	nearRDoor = False
 	crispy = False
 	
-	#Create proximity manager 
+	# Create proximity manager 
 	goal= vizproximity.Manager()
 	autodoor = vizproximity.Manager()
-	crispyManager = vizproximity.Manager()
+	crispy_manager = vizproximity.Manager()
 
 	# Proximity sensor
-	global rDoorSensor, lDoorSensor, lDoorOpenSensor, rDoorOpenSensor, plankLSensor, plankRSensor, \
-	plankStartSensor, floorLSensor, floorRSensor, floorT1Sensor, floorT2Sensor
+	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor, plankl_sensor, plankr_sensor, \
+	plankstarts_sensor, floor_lSensor, floor_rSensor, floort1_sensor, floorT2Sensor
 	
 	# Add main viewpoint as proximity target 
 	target = vizproximity.Target(viz.MainView)
 	goal.addTarget(target)
 	autodoor.addTarget(target)
-	crispyManager.addTarget(target)
+	crispy_manager.addTarget(target)
 	
-	global plankL, plankR
+	global plankl, plankr
 
-	#room
-	wallB = vizshape.addPlane([75, 30])
-	wallB.setPosition(-22.25, 0, 0)
-	wallB.setEuler(x=90, y=90, z=0)
-	wallB.texture(metal)
+	# Main room setup
+	wall_b = vizshape.addPlane([75, 30])
+	wall_b.setPosition(-22.25, 0, 0)
+	wall_b.setEuler(x=90, y=90, z=0)
+	wall_b.texture(metal)
 	
 	ceiling = vizshape.addPlane([75,75])
 	ceiling.setEuler(0, 180, 0)
 	ceiling.setPosition(15,10, 0)
 	ceiling.texture(metal)
 
-	global doorL, doorR
-	doorL = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
-	doorL.setEuler(90,0,0)
-	doorL.setPosition(22.5,-20,4.75)
+	global door_l, door_r
+	door_l = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_l.setEuler(90,0,0)
+	door_l.setPosition(22.5,-20,4.75)
 		
-	doorR = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
-	doorR.setEuler(90,0,0)
+	door_r = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_r.setEuler(90,0,0)
 		
-	doorL.center(0.5,0,0)
-	doorR.center(0.5,0,0)
+	door_l.center(0.5,0,0)
+	door_r.center(0.5,0,0)
 	
-	plankL = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
-	plankR = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
+	plankl = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
+	plankr = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
 	
 	# I've nicknamed the next section of code:
 	# "I hate you for being right, Pythagoras"
 	
 	if (inc == 0):
 		#slant up
-		plankL.setEuler([45,-20,0])
+		plankl.setEuler([45,-20,0])
 	elif (inc == 1):
 		#slant down
-		plankL.setEuler([45,0,0])
+		plankl.setEuler([45,0,0])
 	
 	# initialize second plane
 	if (inc == 1):
 		# slant up
-		plankR.setEuler([135,-20,0])
+		plankr.setEuler([135,-20,0])
 	elif (inc == 0):
 		#slant down
-		plankR.setEuler([135,0,0])
+		plankr.setEuler([135,0,0])
 		
 	if inc == 0:
 		# rightmost wall
-		wallR = vizshape.addPlane([75, 30])
-		wallR.setPosition(10,0,-35)
-		wallR.setEuler(x=0, y=90, z=0)
-		wallR.texture(metal)
+		wall_r = vizshape.addPlane([75, 30])
+		wall_r.setPosition(10,0,-35)
+		wall_r.setEuler(x=0, y=90, z=0)
+		wall_r.texture(metal)
 		# leftmost wall
-		wallL = vizshape.addPlane([75,30])
-		wallL.setPosition(10,0,35)
-		wallL.setEuler(x=0, y=-90, z=0)
-		wallL.texture(metal)
+		wall_l = vizshape.addPlane([75,30])
+		wall_l.setPosition(10,0,35)
+		wall_l.setEuler(x=0, y=-90, z=0)
+		wall_l.texture(metal)
 		
 		# destination point
-		plankL.setPosition([-6.7, -7.15, 15.55])
-		plankR.setPosition([-5.95, -14, -16.25])
+		plankl.setPosition([-6.7, -7.15, 15.55])
+		plankr.setPosition([-5.95, -14, -16.25])
 		
-		texMwallTlr = vizmat.Transform()
-		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
+		tex_mwall_tlr = vizmat.Transform()
+		tex_mwall_tlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
 	
-		texMwallTc = vizmat.Transform()
-		texMwallTc.setScale( [1,1,1.3] )
+		tex_mwall_tc = vizmat.Transform()
+		tex_mwall_tc.setScale( [1,1,1.3] )
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
@@ -515,110 +559,109 @@ def loadInclineParam(inc):
 		floorT2.setPosition(23,-13.75,0)
 		
 		# target area, top ceiling	
-		wallTT = vizshape.addBox([25,6,75])
-		wallTT.setEuler(0,0,0)
-		wallTT.setPosition(25,7,0)
-		wallTT.texture(metal)
+		wall_tt = vizshape.addBox([25,6,75])
+		wall_tt.setEuler(0,0,0)
+		wall_tt.setPosition(25,7,0)
+		wall_tt.texture(metal)
 		
 		# top left wall facing user, target area
 		# is narrow in this condition
-		wallTl = vizshape.addBox([0.25,4,3])
-		wallTl.setEuler(0,0,0)
-		wallTl.setPosition(12.75,2.25,33.75)
-		wallTl.texmat(texMwallTlr)
-		wallTl.texture(tile)
+		wall_tl = vizshape.addBox([0.25,4,3])
+		wall_tl.setEuler(0,0,0)
+		wall_tl.setPosition(12.75,2.25,33.75)
+		wall_tl.texmat(tex_mwall_tlr)
+		wall_tl.texture(tile)
 		
 		# top right facing user
 		# is wide in this condition
-		wallTTr = vizshape.addBox([0.25,4,65])
-		wallTTr.setEuler(0,0,0)
-		wallTTr.setPosition(12.75,2.25, -3)
-		wallTTr.texture(tile)
+		wall_ttr = vizshape.addBox([0.25,4,65])
+		wall_ttr.setEuler(0,0,0)
+		wall_ttr.setPosition(12.75,2.25, -3)
+		wall_ttr.texture(tile)
 		
 		# bottom left wall
 		# is wide in this condition
-		wallTBl = vizshape.addBox([0.25,4.25,65])
-		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(12.75,-11.5,3)	
-		wallTBl.texmat(texMwallTlr)
-		wallTBl.texture(tile)
+		wall_tbl = vizshape.addBox([0.25,4.25,65])
+		wall_tbl.setEuler(0,0,0)
+		wall_tbl.setPosition(12.75,-11.5,3)	
+		wall_tbl.texmat(tex_mwall_tlr)
+		wall_tbl.texture(tile)
 		
 		# bottom right wall
 		# is narrow in this condition
-		wallTBr = vizshape.addBox([0.25,4.25,3])
-		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(12.75,-11.5,-33.75)
-		wallTBr.texmat(texMwallTlr)
-		wallTBr.texture(tile)
+		wall_tbr = vizshape.addBox([0.25,4.25,3])
+		wall_tbr.setEuler(0,0,0)
+		wall_tbr.setPosition(12.75,-11.5,-33.75)
+		wall_tbr.texmat(tex_mwall_tlr)
+		wall_tbr.texture(tile)
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 		
 		# central wall in target area
-		wallTc = vizshape.addBox([0.25,9.25,75])
-		wallTc.setEuler(0,0,0)
-		wallTc.setPosition(12.75,-4.75,0.0)
-		wallTc.texmat(texMwallTc)
-		wallTc.texture(tile)
+		wall_tc = vizshape.addBox([0.25,9.25,75])
+		wall_tc.setEuler(0,0,0)
+		wall_tc.setPosition(12.75,-4.75,0.0)
+		wall_tc.texmat(tex_mwall_tc)
+		wall_tc.texture(tile)
 		
 		# back wall behind target area
-		wallTb = vizshape.addPlane([75,4])
-		wallTb.setPosition(40, 2, 0)
-		wallTb.setEuler(x=90, y=270, z=0)
+		wall_tb = vizshape.addPlane([75,4])
+		wall_tb.setPosition(40, 2, 0)
+		wall_tb.setEuler(x=90, y=270, z=0)
 		
 		#platforms in front of doors
-		floorL = vizshape.addBox([8,0.5,8])
-		floorL.setEuler(45,0,0)
-		floorL.setPosition(9.85,0,31)
-		floorR = vizshape.addBox([8,1,8])
-		floorR.setEuler(45,0,0)
-		floorR.setPosition(11,-14,-33.25)
+		floor_l = vizshape.addBox([8,0.5,8])
+		floor_l.setEuler(45,0,0)
+		floor_l.setPosition(9.85,0,31)
+		floor_r = vizshape.addBox([8,1,8])
+		floor_r.setEuler(45,0,0)
+		floor_r.setPosition(11,-14,-33.25)
 		
 		ground.setPosition([0, -14., 0])
-		plankStart = vizshape.addBox([6,2,6])
-		plankStart.setPosition([-22.2,-14.5,0])
-		plankStart.setEuler([45,0,0])
-		viz.MainView.setPosition(starting_pos)
-		viz.MainView.setEuler(90,0,0)
+		plankstart = vizshape.addBox([6,2,6])
+		plankstart.setPosition([-22.2,-14.5,0])
+		plankstart.setEuler([45,0,0])
 		
-		doorL.setPosition(12.5,2.0,29.75)
-		doorR.setPosition(12.5,-11.5,-32.25)
 		
-		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
-		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,-10.5,-32))
+		door_l.setPosition(12.5,2.0,29.75)
+		door_r.setPosition(12.5,-11.5,-32.25)
 		
-		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
-		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,-10.5,-32))
+		ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
+		rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,-10.5,-32))
 		
-		plankStartSensor = vizproximity.addBoundingBoxSensor(plankStart,scale=(1.0,10.0,1.0))
-		plankLSensor = vizproximity.addBoundingBoxSensor(plankL,scale=(1.0,18.0,1.0))
-		plankRSensor = vizproximity.addBoundingBoxSensor(plankR,scale=(1.0,18.0,1.0))
-		floorLSensor = vizproximity.addBoundingBoxSensor(floorL,scale=(1.0,18.0,1.5))
-		floorRSensor = vizproximity.addBoundingBoxSensor(floorR,scale=(1.0,18.0,1.0))
-		floorT1Sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,18.0,1.0))
+		ldoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
+		rdoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,-10.5,-32))
+		
+		plankstarts_sensor = vizproximity.addBoundingBoxSensor(plankstart,scale=(1.0,10.0,1.0))
+		plankl_sensor = vizproximity.addBoundingBoxSensor(plankl,scale=(1.0,18.0,1.0))
+		plankr_sensor = vizproximity.addBoundingBoxSensor(plankr,scale=(1.0,18.0,1.0))
+		floor_lSensor = vizproximity.addBoundingBoxSensor(floor_l,scale=(1.0,18.0,1.5))
+		floor_rSensor = vizproximity.addBoundingBoxSensor(floor_r,scale=(1.0,18.0,1.0))
+		floort1_sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,18.0,1.0))
 		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,18.0,1.0))
 
-	if inc == 1:
+	elif inc == 1:
 		# rightmost wall
-		wallR = vizshape.addPlane([75, 30])
-		wallR.setPosition(10,0,-35)
-		wallR.setEuler(x=0, y=90, z=0)
-		wallR.texture(metal)
+		wall_r = vizshape.addPlane([75, 30])
+		wall_r.setPosition(10,0,-35)
+		wall_r.setEuler(x=0, y=90, z=0)
+		wall_r.texture(metal)
 		# leftmost wall
-		wallL = vizshape.addPlane([75,30])
-		wallL.setPosition(10,0,35)
-		wallL.setEuler(x=0, y=-90, z=0)
-		wallL.texture(metal)
+		wall_l = vizshape.addPlane([75,30])
+		wall_l.setPosition(10,0,35)
+		wall_l.setEuler(x=0, y=-90, z=0)
+		wall_l.texture(metal)
 		
 		# destination point
-		plankL.setPosition([-5.95, -14, 16.25])
-		plankR.setPosition([-6.7, -7.15, -15.55])
+		plankl.setPosition([-5.95, -14, 16.25])
+		plankr.setPosition([-6.7, -7.15, -15.55])
 		
-		texMwallTlr = vizmat.Transform()
-		texMwallTlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
+		tex_mwall_tlr = vizmat.Transform()
+		tex_mwall_tlr.setScale( [1*0.35,2.5*0.4,1*0.35] )
 	
-		texMwallTc = vizmat.Transform()
-		texMwallTc.setScale( [1,1,1.3] )
+		tex_mwall_tc = vizmat.Transform()
+		tex_mwall_tc.setScale( [1,1,1.3] )
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
@@ -631,209 +674,226 @@ def loadInclineParam(inc):
 		floorT2.setPosition(25,-13.75,0)
 		
 		# target area, top ceiling	
-		wallTT = vizshape.addBox([25,6,75])
-		wallTT.setEuler(0,0,0)
-		wallTT.setPosition(25,7,0)
-		wallTT.texture(metal)
+		wall_tt = vizshape.addBox([25,6,75])
+		wall_tt.setEuler(0,0,0)
+		wall_tt.setPosition(25,7,0)
+		wall_tt.texture(metal)
 		
 		# top left wall facing user, target area
 		# is narrow in this condition
-		wallTl = vizshape.addBox([0.25,4,65])
-		wallTl.setEuler(0,0,0)
-		wallTl.setPosition(12.75,2.25,3)
-		wallTl.texmat(texMwallTlr)
-		wallTl.texture(tile)
+		wall_tl = vizshape.addBox([0.25,4,65])
+		wall_tl.setEuler(0,0,0)
+		wall_tl.setPosition(12.75,2.25,3)
+		wall_tl.texmat(tex_mwall_tlr)
+		wall_tl.texture(tile)
 		
 		# top right facing user
 		# is wide in this condition
-		wallTTr = vizshape.addBox([0.25,4,3])
-		wallTTr.setEuler(0,0,0)
-		wallTTr.setPosition(12.75,2.25,-33.75)	
-		wallTTr.texmat(texMwallTlr)
-		wallTTr.texture(tile)
+		wall_ttr = vizshape.addBox([0.25,4,3])
+		wall_ttr.setEuler(0,0,0)
+		wall_ttr.setPosition(12.75,2.25,-33.75)	
+		wall_ttr.texmat(tex_mwall_tlr)
+		wall_ttr.texture(tile)
 		
 		# bottom left wall
 		# is wide in this condition
-		wallTBl = vizshape.addBox([0.25,4.25,3])
-		wallTBl.setEuler(0,0,0)
-		wallTBl.setPosition(12.75,-11.5,33.75)	
-		wallTBl.texmat(texMwallTlr)
-		wallTBl.texture(tile)
+		wall_tbl = vizshape.addBox([0.25,4.25,3])
+		wall_tbl.setEuler(0,0,0)
+		wall_tbl.setPosition(12.75,-11.5,33.75)	
+		wall_tbl.texmat(tex_mwall_tlr)
+		wall_tbl.texture(tile)
 		
 		# bottom right wall
 		# is narrow in this condition
-		wallTBr = vizshape.addBox([0.25,4.25,65])
-		wallTBr.setEuler(0,0,0)
-		wallTBr.setPosition(12.75,-11.5,-2.75)
-		wallTBr.texmat(texMwallTlr)
-		wallTBr.texture(tile)
+		wall_tbr = vizshape.addBox([0.25,4.25,65])
+		wall_tbr.setEuler(0,0,0)
+		wall_tbr.setPosition(12.75,-11.5,-2.75)
+		wall_tbr.texmat(tex_mwall_tlr)
+		wall_tbr.texture(tile)
 	
 		tile.wrap(viz.WRAP_T, viz.REPEAT)
 		tile.wrap(viz.WRAP_S, viz.REPEAT)
 		
 		# central wall in target area
-		wallTc = vizshape.addBox([0.25,9.25,75])
-		wallTc.setEuler(0,0,0)
-		wallTc.setPosition(12.75,-4.75,0.0)
-		wallTc.texmat(texMwallTc)
-		wallTc.texture(tile)
+		wall_tc = vizshape.addBox([0.25,9.25,75])
+		wall_tc.setEuler(0,0,0)
+		wall_tc.setPosition(12.75,-4.75,0.0)
+		wall_tc.texmat(tex_mwall_tc)
+		wall_tc.texture(tile)
 		
 		# back wall behind target area
-		wallTb = vizshape.addPlane([20,4])
-		wallTb.setPosition(40, 2, 0)
-		wallTb.setEuler(x=90, y=270, z=0)
+		wall_tb = vizshape.addPlane([20,4])
+		wall_tb.setPosition(40, 2, 0)
+		wall_tb.setEuler(x=90, y=270, z=0)
 		
 		# Platforms in front of doors
-		floorL = vizshape.addBox([8,0.5,8])
-		floorL.setEuler(45,0,0)
-		floorL.setPosition(11.75,-14,32.5)
-		floorR = vizshape.addBox([8,0.5,8])
-		floorR.setEuler(45,0,0)
-		floorR.setPosition(9.85,0,-31.)
+		floor_l = vizshape.addBox([8,0.5,8])
+		floor_l.setEuler(45,0,0)
+		floor_l.setPosition(11.75,-14,32.5)
+		floor_r = vizshape.addBox([8,0.5,8])
+		floor_r.setEuler(45,0,0)
+		floor_r.setPosition(9.85,0,-31.)
 		
 		ground.setPosition([0, -14., 0])
-		plankStart = vizshape.addBox([6,2,6])
-		plankStart.setPosition([-22.2,-14.5,0])
-		plankStart.setEuler([45,0,0])
-		viz.MainView.setPosition(starting_pos)
-		viz.MainView.setPosition(90,0,0)
+		plankstart = vizshape.addBox([6,2,6])
+		plankstart.setPosition([-22.2,-14.5,0])
+		plankstart.setEuler([45,0,0])
 		
-		doorL.setPosition(12.5,-11.5,29.75)
-		doorR.setPosition(12.5,2.0,-32.25)
+		door_l.setPosition(12.5,-11.5,29.75)
+		door_r.setPosition(12.5,2.0,-32.25)
 		
-		lDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,-10.5,32))
-		rDoorSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
-		lDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,-10.5,32))
-		rDoorOpenSensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
+		ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,-10.5,32))
+		rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
+		ldoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,-10.5,32))
+		rdoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
 		
-		plankStartSensor = vizproximity.addBoundingBoxSensor(plankStart,scale=(1.0,10.0,1.0))
-		plankLSensor = vizproximity.addBoundingBoxSensor(plankL,scale=(1.0,18.0,1.0))
-		plankRSensor = vizproximity.addBoundingBoxSensor(plankR,scale=(1.0,18.0,1.0))
-		floorLSensor = vizproximity.addBoundingBoxSensor(floorL,scale=(1.0,18.0,1.0))
-		floorRSensor = vizproximity.addBoundingBoxSensor(floorR,scale=(1.5,18.0,1.0))
-		floorT1Sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,18.0,1.0))
+		plankstarts_sensor = vizproximity.addBoundingBoxSensor(plankstart,scale=(1.0,10.0,1.0))
+		plankl_sensor = vizproximity.addBoundingBoxSensor(plankl,scale=(1.0,18.0,1.0))
+		plankr_sensor = vizproximity.addBoundingBoxSensor(plankr,scale=(1.0,18.0,1.0))
+		floor_lSensor = vizproximity.addBoundingBoxSensor(floor_l,scale=(1.0,18.0,1.0))
+		floor_rSensor = vizproximity.addBoundingBoxSensor(floor_r,scale=(1.5,18.0,1.0))
+		floort1_sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,18.0,1.0))
 		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,18.0,1.0))
 		
 	
 	# Add destination sensors to manager
-	goal.addSensor(lDoorSensor)
-	goal.addSensor(rDoorSensor)
-	autodoor.addSensor(lDoorOpenSensor)
-	autodoor.addSensor(rDoorOpenSensor)
-	crispyManager.addSensor(plankStartSensor)
-	crispyManager.addSensor(plankLSensor)
-	crispyManager.addSensor(plankRSensor)
-	crispyManager.addSensor(floorLSensor)
-	crispyManager.addSensor(floorRSensor)
-	crispyManager.addSensor(floorT1Sensor)
-	crispyManager.addSensor(floorT2Sensor)
+	goal.addSensor(ldoor_sensor)
+	goal.addSensor(rdoor_sensor)
+	autodoor.addSensor(ldoor_open_sensor)
+	autodoor.addSensor(rdoor_open_sensor)
+	crispy_manager.addSensor(plankstarts_sensor)
+	crispy_manager.addSensor(plankl_sensor)
+	crispy_manager.addSensor(plankr_sensor)
+	crispy_manager.addSensor(floor_lSensor)
+	crispy_manager.addSensor(floor_rSensor)
+	crispy_manager.addSensor(floort1_sensor)
+	crispy_manager.addSensor(floorT2Sensor)
 	
 	# Toggle debug shapes with keypress 
 	vizact.onkeydown('l',goal.setDebug,viz.TOGGLE)
 	vizact.onkeydown('o', autodoor.setDebug,viz.TOGGLE)
-	vizact.onkeydown('9', crispyManager.setDebug,viz.TOGGLE)
+	vizact.onkeydown('9', crispy_manager.setDebug,viz.TOGGLE)
 	
 	autodoor.onEnter(None,openSensame)
 	goal.onEnter(None,enterProximity)
-	crispyManager.onEnter(None,deepfriedEnter)
-	crispyManager.onExit(None,deepfriedExit)
+	crispy_manager.onEnter(None,deepfriedEnter)
+	crispy_manager.onExit(None,deepfriedExit)
 	
 def friedParticipant(event):
-	global crispy
-	print str(crispy)
-	if event.sensor == crispySensor1:
-		crispy = True
-		print str(crispy)
-	if event.sensor == crispySensor2:
-		crispy = True
-		print str(crispy)
+	"""Reset participant location if they step out of bounds.
+	@args:
+		event (vizproximity.ENTER_PROXIMITY_EVENT):
+		User walks into lava.
+		
+	"""
+	viz.MainView.setPosition([-20, 2, 0])
 	
 def openSensame(event):
+	"""Open doors when user steps in front of one of them."""
 	global nearLDoor, nearRDoor
 	opendoor = vizact.spinto([0,1,0, 181], 360)
-	if event.sensor == lDoorOpenSensor:
+	if event.sensor == ldoor_open_sensor:
 		nearLDoor = True
-		doorL.addAction(opendoor)
-	elif event.sensor == rDoorOpenSensor:
+		door_l.addAction(opendoor)
+	elif event.sensor == rdoor_open_sensor:
 		nearRDoor = True
-		doorR.addAction(opendoor)
+		door_r.addAction(opendoor)
 	
 def enterProximity(event):
-	"""@args vizproximity.ProximityEvent()"""
-	global inLDoor, inRDoor
-	if event.sensor == lDoorSensor:
-		inLDoor = True
+	"""End trial when participant makes a choice of L or R
+	@args: 
+		event (vizproximity.ENTER_PROXIMITY_EVENT):
+		User walks into the goal area.
+		
+	"""
+	global inldoor, inrdoor
+	if event.sensor == ldoor_sensor:
+		inldoor = True
 		children = viz.MainScene.getChildren()
 		for child in children:
 			child.remove()
 
-	elif event.sensor == rDoorSensor:
-		inRDoor = True
+	elif event.sensor == rdoor_sensor:
+		inrdoor = True
 		children = viz.MainScene.getChildren()
 		for child in children:
 			child.remove()
 		
 def deepfriedEnter(event):
+	"""Triggered when user walks into a valid walking zone.
+
+	Incline conditions-specific sensor. If this is triggered right
+	after a user triggers the function deepfriedExit, then the user
+	is still safe and the trial continues as normal.
+
+	@args: 
+		event (vizproximity.ENTER_PROXIMITY_EVENT):
+		User walks into a valid walking area.
+		
+	"""
 	global crispy
 	if crispy == True:
 		crispy = False
 def deepfriedExit(event):
+	"""Triggred when user walks out of a valid walking zone.
+
+	Incline conditions-specific sensor. If this is triggered twice
+	in a row, the user has walked out of a valid area (into lava),
+	the misstep is recorded and the user's position is reset to start.
+
+	@args: 
+		event (vizproximity.ENTER_PROXIMITY_EVENT):
+		User walks out of the walking goal area.
+		
+	"""
 	global crispy
 	if crispy == False:
 		crispy = True
 	elif crispy == True:
-		print "you ded!"
+		viz.MainView.setPosition([-20, -10, 0])
 
 def waitTrial():
-	
-	print "running"
+	"""Keep trial running until the user finishes it."""
 	yield vizproximity.waitEnter(manager=goal)
-	#yield viztask.waitTime(10)
 
 def run():
+	"""Run the experiment."""
 	conds = ["00", "01", "02", "03", "04", "05", "10", "11", "12", "13", "14", "15", "20", "21", "30", "31"]
 	shuffle(conds)
-	
 	for c in conds:
-		print "yay"
 		yield runTrial(c)
-		
-viz.go()
-viztask.schedule(run())
+	viz.quit()
+
 
 def runTrial(c):
+	"""Run a trial in the experiment.
+	@args:
+		c (string): the identifier for this specific trial.
+		
+	"""
 	if c[0] == "0":
 		print "test0"
 		loadBaseScene()
 		loadTextureConditions(int(c[1]))
 		sensorSetup()
-		#viztask.schedule(waitTrial())
+
 	elif c[0] == "1":
 		print "test1"
 		loadBaseScene()
 		loadWidthGeometry(int(c[1]))
 		sensorSetup()
-		#viztask.schedule(waitTrial())
+		
 	elif c[0]=="2":
 		print "test2"
 		loadBaseScene()
 		loadFrictionConditions(int(c[1]))
-		#viztask.schedule(waitTrial())
+		sensorSetup()
+		
 	elif c[0]=="3":
 		print "test3"
 		loadInclineParam(int(c[1]))
-	print "This totally happened"
+	
 	yield waitTrial()
-		
-'''def doExperimentTask():
-	NUMBER_OF_TRIALS = 3
-	for i in range(NUMBER_OF_TRIALS):
-		yield doTrialTask(i)
-	print 'experiment done'
-viztask.schedule(doExperimentTask())
 
-def doTrialTask(trialNumber):
-	#present stimulus
-	yield viztask.waitKeyDown(' ') #gather response
-	#record data
-	print 'trial number', trialNumber'''
+viz.go()
+viztask.schedule(run())

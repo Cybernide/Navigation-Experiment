@@ -14,13 +14,14 @@ import vizshape
 import vizfx
 import vizact
 #from random import randint, sample
-import ts_main
+#import ts_main
 import time
 import vizmat
 
 # Assets directory
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
 starting_pos = [-20, 2, 0]
+
 
 def loadscene(remaining, wid):
 	t0 = time.time()
@@ -270,7 +271,12 @@ def loadscene(remaining, wid):
 def friedParticipant(event):
 	global crispy
 	crispy = True
-	print str(crispy)
+	if event.sensor == crispySensor1:
+		print "crispy1"
+	elif event.sensor == crispySensor2:
+		print "crispy2"
+	elif event.sensor == crispySensor3:
+		print "crispy3"
 		
 def openSensame(event):
 	"""@args event"""
@@ -292,7 +298,7 @@ def enterProximity(event,tr,t0):
 		for child in children:
 			child.remove()
 		ts_main.getData('L',time.time()-t0)
-		ts_main.runTrials(tr)
+		#ts_main.runTrials(tr)
 
 	elif event.sensor == rDoorSensor:
 		inRDoor = True
@@ -300,4 +306,5 @@ def enterProximity(event,tr,t0):
 		for child in children:
 			child.remove()
 		ts_main.getData('R',time.time()-t0)
-		ts_main.runTrials(tr)
+		#ts_main.runTrials(tr)
+loadscene(10,0)

@@ -16,7 +16,7 @@ subjid = raw_input("Enter participant ID: ")
 flname = savepath + "test_subj" + subjid + ".txt"
 results = open(flname, "a")
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
-t0 = time.time()
+global t0, trial_cond
 
 #set graphic parameters
 viz.setMultiSample(4)
@@ -26,17 +26,18 @@ viz.fov(80)
 viz.collision(viz.ON)
 
 #load textures
-stone = viz.addTexture('images/tile_stone.jpg', wrap=viz.REPEAT)
-tile = viz.addTexture('images/tile_slate.jpg', wrap=viz.REPEAT)
-metal = viz.addTexture('metal.jpg', wrap=viz.REPEAT)
-lava = viz.addTexture('lava.png', wrap=viz.REPEAT)
+stone = viz.addTexture("images/tile_stone.jpg", wrap=viz.REPEAT)
+tile = viz.addTexture("images/tile_slate.jpg", wrap=viz.REPEAT)
+metal = viz.addTexture("metal.jpg", wrap=viz.REPEAT)
+lava = viz.addTexture("lava.png", wrap=viz.REPEAT)
 
 # Add white point light 
 # light = vizfx.addPointLight(color=viz.WHITE, pos=(0,1,1))
 
 def getData(choice, finish_time):
-	global results
-	results.write("\n" + choice + "," + str(finish_time))
+	global results, trial_cond
+	print "\n" + trial_cond + "," + choice + "," + str(finish_time)
+	results.write("\n" + trial_cond + "," + choice + "," + str(finish_time))
 		
 		
 def loadBaseScene():
@@ -205,7 +206,6 @@ def loadTextureConditions(tex):
 	plankstart = vizshape.addBox([5,0.5,5])
 	plankstart.setPosition([-21.5,0,0])
 	plankstart.setEuler([45,0,0])
-	t0 = time.time()
 	
 def loadFrictionConditions(fri):
 	"""Set up paths for a friction condition trial.
@@ -252,7 +252,6 @@ def loadFrictionConditions(fri):
 	plankstart = vizshape.addBox([5,0.5,5])
 	plankstart.setPosition([-21.5,0,0])
 	plankstart.setEuler([45,0,0])
-	t0 = time.time()
 	
 def loadWidthGeometry(wid):
 	"""Set up paths for a geometry condition trial.
@@ -323,13 +322,13 @@ def loadWidthGeometry(wid):
 	crispy = False
 	
 	#Create proximity manager 
+	global autodoor, goal, crispy_manager
 	goal = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
-	deepfriedManager = vizproximity.Manager()
+	crispy_manager = vizproximity.Manager()
 
 	# Proximity sensor
-	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor, crispy_sensor1, crispy_sensor2, crispy_sensor3
-	#crispy_sensor2, crispy_sensor3
+	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor
 	ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
 	rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
 	ldoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
@@ -364,22 +363,25 @@ def loadWidthGeometry(wid):
 	target = vizproximity.Target(viz.MainView)
 	goal.addTarget(target)
 	autodoor.addTarget(target)
-	deepfriedManager.addTarget(target)
+	crispy_manager.addTarget(target)
 
 	# Add destination sensors to manager
 	goal.addSensor(ldoor_sensor)
 	goal.addSensor(rdoor_sensor)
 	autodoor.addSensor(ldoor_open_sensor)
 	autodoor.addSensor(rdoor_open_sensor)
-	deepfriedManager.addSensor(crispy_sensor1)
-	deepfriedManager.addSensor(crispy_sensor2)
-	deepfriedManager.addSensor(crispy_sensor3)
+	crispy_manager.addSensor(crispy_sensor1)
+	crispy_manager.addSensor(crispy_sensor2)
+	crispy_manager.addSensor(crispy_sensor3)
 
 	# Toggle debug shapes with keypress 
-	vizact.onkeydown('l',goal.setDebug,viz.TOGGLE)
-	vizact.onkeydown('o', autodoor.setDebug,viz.TOGGLE)
-	vizact.onkeydown('9', deepfriedManager.setDebug,viz.TOGGLE)
-	t0 = time.time()
+	vizact.onkeydown("l",goal.setDebug,viz.TOGGLE)
+	vizact.onkeydown("o", autodoor.setDebug,viz.TOGGLE)
+	vizact.onkeydown("9", crispy_manager.setDebug,viz.TOGGLE)
+	
+	autodoor.onEnter(None,openSensame)
+	goal.onEnter(None,enterProximity)
+	crispy_manager.onEnter(None,friedParticipant)
 	
 def sensorSetup():
 	"""Initialize the proximity sensors for texture, width and 
@@ -395,13 +397,13 @@ def sensorSetup():
 	crispy = False
 	
 	#Create proximity manager 
-	global goal
+	global autodoor, goal, crispy_manager
 	goal = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
-	deepfriedManager = vizproximity.Manager()
+	crispy_manager = vizproximity.Manager()
 
 	# Proximity sensors
-	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor, crispy_sensor1, crispy_sensor2, crispy_sensor3
+	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor
 	ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
 	rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
 	crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
@@ -410,30 +412,30 @@ def sensorSetup():
 
 	ldoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
 	rdoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
-
+	
 	# Add main viewpoint as proximity target 
 	target = vizproximity.Target(viz.MainView)
 	goal.addTarget(target)
 	autodoor.addTarget(target)
-	deepfriedManager.addTarget(target)
+	crispy_manager.addTarget(target)
 
 	# Add destination sensors to manager
 	goal.addSensor(ldoor_sensor)
 	goal.addSensor(rdoor_sensor)
 	autodoor.addSensor(ldoor_open_sensor)
 	autodoor.addSensor(rdoor_open_sensor)
-	deepfriedManager.addSensor(crispy_sensor1)
-	deepfriedManager.addSensor(crispy_sensor2)
-	deepfriedManager.addSensor(crispy_sensor3)
+	crispy_manager.addSensor(crispy_sensor1)
+	crispy_manager.addSensor(crispy_sensor2)
+	crispy_manager.addSensor(crispy_sensor3)
 
 	# Toggle debug shapes with keypress 
-	vizact.onkeydown('l',goal.setDebug,viz.TOGGLE)
-	vizact.onkeydown('o', autodoor.setDebug,viz.TOGGLE)
-	vizact.onkeydown('9', deepfriedManager.setDebug,viz.TOGGLE)
+	vizact.onkeydown("l",goal.setDebug,viz.TOGGLE)
+	vizact.onkeydown("o", autodoor.setDebug,viz.TOGGLE)
+	vizact.onkeydown("9", crispy_manager.setDebug,viz.TOGGLE)
 	
 	autodoor.onEnter(None,openSensame)
 	goal.onEnter(None,enterProximity)
-	deepfriedManager.onEnter(None,friedParticipant)
+	crispy_manager.onEnter(None,friedParticipant)
 	
 def loadInclineParam(inc):
 	"""Set up a trial where the condition is between inclines."""
@@ -454,7 +456,7 @@ def loadInclineParam(inc):
 	viz.MainView.setEuler(90,0,0)
 	
 	# Add ground
-	ground = viz.addChild('ground.osgb')
+	ground = viz.addChild("ground.osgb")
 	ground.texture(lava)
 	ground.setScale(1.5,0,1.5)
 	global inldoor, inrdoor, nearLDoor, nearRDoor,crispy, goal
@@ -467,6 +469,7 @@ def loadInclineParam(inc):
 	crispy = False
 	
 	# Create proximity manager 
+	global autodoor, goal, crispy_manager
 	goal= vizproximity.Manager()
 	autodoor = vizproximity.Manager()
 	crispy_manager = vizproximity.Manager()
@@ -495,11 +498,11 @@ def loadInclineParam(inc):
 	ceiling.texture(metal)
 
 	global door_l, door_r
-	door_l = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_l = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
 	door_l.setEuler(90,0,0)
 	door_l.setPosition(22.5,-20,4.75)
 		
-	door_r = viz.add('box.wrl', pos = [0,1,8], scale = [2.5,3.8,.05])
+	door_r = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
 	door_r.setEuler(90,0,0)
 		
 	door_l.center(0.5,0,0)
@@ -636,8 +639,8 @@ def loadInclineParam(inc):
 		plankstarts_sensor = vizproximity.addBoundingBoxSensor(plankstart,scale=(1.0,10.0,1.0))
 		plankl_sensor = vizproximity.addBoundingBoxSensor(plankl,scale=(1.0,18.0,1.0))
 		plankr_sensor = vizproximity.addBoundingBoxSensor(plankr,scale=(1.0,18.0,1.0))
-		floor_lSensor = vizproximity.addBoundingBoxSensor(floor_l,scale=(1.0,18.0,1.5))
-		floor_rSensor = vizproximity.addBoundingBoxSensor(floor_r,scale=(1.0,18.0,1.0))
+		floor_lSensor = vizproximity.addBoundingBoxSensor(floor_l,scale=(1.25,18.0,1.25))
+		floor_rSensor = vizproximity.addBoundingBoxSensor(floor_r,scale=(1.25,18.0,1.25))
 		floort1_sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,18.0,1.0))
 		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,18.0,1.0))
 
@@ -750,13 +753,13 @@ def loadInclineParam(inc):
 		plankstarts_sensor = vizproximity.addBoundingBoxSensor(plankstart,scale=(1.0,10.0,1.0))
 		plankl_sensor = vizproximity.addBoundingBoxSensor(plankl,scale=(1.0,18.0,1.0))
 		plankr_sensor = vizproximity.addBoundingBoxSensor(plankr,scale=(1.0,18.0,1.0))
-		floor_lSensor = vizproximity.addBoundingBoxSensor(floor_l,scale=(1.0,18.0,1.0))
-		floor_rSensor = vizproximity.addBoundingBoxSensor(floor_r,scale=(1.5,18.0,1.0))
+		floor_lSensor = vizproximity.addBoundingBoxSensor(floor_l,scale=(1.25,18.0,1.25))
+		floor_rSensor = vizproximity.addBoundingBoxSensor(floor_r,scale=(1.25,18.0,1.25))
 		floort1_sensor = vizproximity.addBoundingBoxSensor(floorT1,scale=(1.0,18.0,1.0))
 		floorT2Sensor = vizproximity.addBoundingBoxSensor(floorT2,scale=(1.0,18.0,1.0))
 		
-	
 	# Add destination sensors to manager
+	
 	goal.addSensor(ldoor_sensor)
 	goal.addSensor(rdoor_sensor)
 	autodoor.addSensor(ldoor_open_sensor)
@@ -770,9 +773,9 @@ def loadInclineParam(inc):
 	crispy_manager.addSensor(floorT2Sensor)
 	
 	# Toggle debug shapes with keypress 
-	vizact.onkeydown('l',goal.setDebug,viz.TOGGLE)
-	vizact.onkeydown('o', autodoor.setDebug,viz.TOGGLE)
-	vizact.onkeydown('9', crispy_manager.setDebug,viz.TOGGLE)
+	vizact.onkeydown("l",goal.setDebug,viz.TOGGLE)
+	vizact.onkeydown("o", autodoor.setDebug,viz.TOGGLE)
+	vizact.onkeydown("9", crispy_manager.setDebug,viz.TOGGLE)
 	
 	autodoor.onEnter(None,openSensame)
 	goal.onEnter(None,enterProximity)
@@ -806,19 +809,24 @@ def enterProximity(event):
 		User walks into the goal area.
 		
 	"""
-	global inldoor, inrdoor
+	global inldoor, inrdoor, t0, autodoor, goal, crispy_manager
+	finish_time = time.time() - t0
 	if event.sensor == ldoor_sensor:
 		inldoor = True
-		children = viz.MainScene.getChildren()
-		for child in children:
-			child.remove()
-
+		choice = "L"
+		
 	elif event.sensor == rdoor_sensor:
 		inrdoor = True
-		children = viz.MainScene.getChildren()
-		for child in children:
-			child.remove()
+		choice = "R"
 		
+	autodoor.clearSensors()
+	goal.clearSensors()
+	crispy_manager.clearSensors()
+	children = viz.MainScene.getChildren()
+	for child in children:
+		child.remove()
+	getData(choice, finish_time)
+	
 def deepfriedEnter(event):
 	"""Triggered when user walks into a valid walking zone.
 
@@ -835,7 +843,7 @@ def deepfriedEnter(event):
 	if crispy == True:
 		crispy = False
 def deepfriedExit(event):
-	"""Triggred when user walks out of a valid walking zone.
+	"""Triggered when user walks out of a valid walking zone.
 
 	Incline conditions-specific sensor. If this is triggered twice
 	in a row, the user has walked out of a valid area (into lava),
@@ -858,7 +866,8 @@ def waitTrial():
 
 def run():
 	"""Run the experiment."""
-	conds = ["00", "01", "02", "03", "04", "05", "10", "11", "12", "13", "14", "15", "20", "21", "30", "31"]
+	#conds = ["00", "01", "02", "03", "04", "05", "10", "11", "12", "13", "14", "15", "20", "21", "30", "31"]
+	conds = ["30", "31"]
 	shuffle(conds)
 	for c in conds:
 		yield runTrial(c)
@@ -871,29 +880,31 @@ def runTrial(c):
 		c (string): the identifier for this specific trial.
 		
 	"""
+	global trial_cond, t0
+	trial_cond = c
 	if c[0] == "0":
-		print "test0"
 		loadBaseScene()
 		loadTextureConditions(int(c[1]))
 		sensorSetup()
+		t0 = time.time()
 
 	elif c[0] == "1":
-		print "test1"
 		loadBaseScene()
 		loadWidthGeometry(int(c[1]))
-		sensorSetup()
+		t0 = time.time()
 		
 	elif c[0]=="2":
-		print "test2"
 		loadBaseScene()
 		loadFrictionConditions(int(c[1]))
 		sensorSetup()
+		t0 = time.time()
 		
 	elif c[0]=="3":
-		print "test3"
 		loadInclineParam(int(c[1]))
+		t0 = time.time()
 	
 	yield waitTrial()
 
 viz.go()
 viztask.schedule(run())
+#viz.quit()

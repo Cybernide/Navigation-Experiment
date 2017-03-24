@@ -1,5 +1,4 @@
 ﻿import viz
-import vizinfo
 import vizproximity
 import viztask
 import vizshape
@@ -11,9 +10,11 @@ import time
 import os.path
 from random import shuffle
 
-savepath = "C:\Users\Cyan\Documents\\"
+# Change as needed
+savepath = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
 subjid = raw_input("Enter participant ID: ")
-flname = savepath + "test_subj" + subjid + ".txt"
+interface = raw_input("Input '1' for joystick, '2' for WIP, '3' for treadmill: ")
+flname = savepath + "testsubj" + subjid + "_intfc_" + interface + ".txt"
 results = open(flname, "a")
 asset_dir = "C:\Users\Cyan\Documents\Viz_envmts\Thesis-Navigation\Navigation-Experiment\\"
 global t0, trial_cond, oops, starting_pos
@@ -23,62 +24,46 @@ viz.setMultiSample(4)
 viz.fov(80)
 
 # Add collision
-#viz.collision(viz.ON)
 viz.MainView.collision(viz.ON)
 viz.MainView.gravity(10)
 
 #load textures
-tile = viz.addTexture("images/tile_slate.jpg", wrap=viz.REPEAT)
+tile = viz.addTexture("tile_slate.jpg", wrap=viz.REPEAT)
 metal = viz.addTexture("metal.jpg", wrap=viz.REPEAT)
 lava = viz.addTexture("lava.png", wrap=viz.REPEAT)
 
-# Add white point light
-mainlight1 = viz.addLight()
-mainlight1.setEuler( 90, 0 ,0 )
-mainlight1.intensity(0.5)
-mainlight2 = viz.addLight()
-mainlight2.setEuler(270,0,0)
-mainlight2.intensity(0.5)
-mainlight3 = viz.addLight()
-mainlight3.setEuler(0,0,90)
-mainlight3.intensity(0.15)
-mainlight4 = viz.addLight()
-mainlight4.setEuler(0,0,270)
-mainlight4.intensity(0.15)
-headlight = viz.MainView.getHeadLight() 
-#headLight.disable()
-headlight.spread(200)
-headlight.intensity(0.75)
-headlight.spotexponent(0)
-#headlight.linearAttenuation(3)
+def letThereBeLight():
+	# Add lighting
+	mainlight1 = viz.addLight()
+	mainlight1.setEuler(90,0,0)
+	mainlight1.intensity(1)
+	
+	mainlight2 = viz.addLight()
+	mainlight2.setEuler(270,0,0)
+	mainlight2.intensity(1)
 
-#Set the light parameters
-"""light1= viz.addLight() 
-light1.position(3,10,0) 
-light1.direction(0,0,3) 
-light1.spread(300) 
-light1.intensity(0.25) 
-light1.spotexponent(0.25)
-light1.linearAttenuation(4)
+	mainlight3 = viz.addLight()
+	mainlight3.setEuler(0,-90,0)
+	mainlight3.intensity(0.5)
+	
+	fxlight = vizfx.addSpotLight(euler=(0,45,0), pos=(15,6,0), color=viz.WHITE)
+	fxlight.spread(180)
+	fxlight.intensity(0.5)
 
-light2 = viz.addLight() 
-light2.position(3,10,0) 
-light2.direction(0,0,-3) 
-light2.spread(300) 
-light2.intensity(0.25) 
-light2.spotexponent(0.25)
-light1.linearAttenuation(4)"""
+	viz.MainView.getHeadLight().disable()
+
 
 def getData(choice, finish_time):
+	"""Collect trial data and write to"""
 	global results, trial_cond, oops
 	print "\n" + trial_cond + "," + choice + "," + str(finish_time)+ "," + str(oops)
 	results.write("\n" + trial_cond + "," + choice + "," + str(finish_time) + "," + str(oops))
 		
 		
 def loadBaseScene():
-	"""Set up the scene for width, friction and texture conditions"""
+	"""Set up the scene for width, friction and texture conditions."""
 	global starting_pos
-	starting_pos = [-20, 2, 0]
+	starting_pos = [-21, 2, 0]
 	# Add ground
 	ground = viz.addChild('ground.osgb')
 	ground.texture(lava)
@@ -96,11 +81,8 @@ def loadBaseScene():
 		view.setEuler(euler,viz.HEAD_ORI)
 	viz.callback(viz.MOUSE_MOVE_EVENT,mousemove)
 	
-	viz.MainView.collision(viz.ON)
 	viz.MainView.setPosition(starting_pos)
 	viz.MainView.setEuler(90,0,0)
-
-	global plankl, plankr
 
 	# Room setup
 
@@ -108,11 +90,11 @@ def loadBaseScene():
 	wall_r = vizshape.addPlane([75, 30])
 	wall_r.setPosition(10,0,-35)
 	wall_r.setEuler(x=0, y=90, z=0)
-	wall_r.texture(metal)
+	wall_r.color(viz.BLACK)
 	wall_l = vizshape.addPlane([75,30])
 	wall_l.setPosition(10,0,35)
 	wall_l.setEuler(x=0, y=-90, z=0)
-	wall_l.texture(metal)
+	wall_l.color(viz.BLACK)
 	wall_b = vizshape.addPlane([75, 30])
 	wall_b.setPosition(-22.25, 0, 0)
 	wall_b.setEuler(x=90, y=90, z=0)
@@ -223,22 +205,24 @@ def loadTextureConditions(tex):
 	elif (tex == 1) or (tex == 4) or (tex == 6):
 		model_plankl = model_plankl + "stone"
 		plankl = vizfx.addChild(asset_dir + model_plankl + ".osgb")
+		#plankl.specular(0.075,0.075,0.075)
 	elif (tex == 3) or (tex == 5):
 		model_plankl = model_plankl + "gravel"
 		plankl = vizfx.addChild(asset_dir + model_plankl + ".osgb")
-		plankl.specular(0.15,0.15,0.15)
+		#plankl.specular(0.075,0.075,0.075)
 		
 		
 	if (tex == 0) or (tex == 5) or (tex == 6):
 		model_plankr = model_plankr + "stone"
 		plankr = vizfx.addChild(asset_dir + model_plankr + ".osgb")
+		#plankr.specular(0.075,0.075,0.075)
 	elif (tex == 1) or (tex == 3):
 		model_plankr = model_plankr + "rubber"
 		plankr = vizfx.addChild(asset_dir + model_plankr + ".osgb")
 	elif (tex == 4) or (tex == 2):
 		model_plankr = model_plankr + "gravel"
 		plankr = vizfx.addChild(asset_dir + model_plankr + ".osgb")
-		plankr.specular(0.15,0.15,0.15)
+		#plankr.specular(0.075,0.075,0.075)
 	
 	
 	plankl.setPosition([-5.95, -0.25, 16.25])
@@ -283,9 +267,9 @@ def loadFrictionConditions(fri):
 	
 	'''
 	if (fri == 0):
-		plankl.specular(0.3, 0.3, 0.3)
+		plankl.specular(0.225, 0.225, 0.225)
 	elif (fri == 1):
-		plankr.specular(0.3, 0.3, 0.3)
+		plankr.specular(0.225, 0.225, 0.225)
 	
 	plankl.setPosition([-5.95, -0.25, 16.25])
 	plankl.setEuler([45,0,0])
@@ -304,7 +288,12 @@ def loadWidthGeometry(wid):
 		for this trial.
 
 	"""
+	# Door objects (used for opening animation, see openSensame())
 	global door_l, door_r
+	# Sensors (for tracing events)
+	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor
+	# Managers
+	global autodoor, goal, crispy_manager
 	
 	# Left and right doors, respectively
 	door_l = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
@@ -358,26 +347,18 @@ def loadWidthGeometry(wid):
 	plankstart.setPosition([-21.5,0,0])
 	plankstart.setEuler([45,0,0])
 	
-	global inldoor, inrdoor, nearLDoor, nearRDoor,crispy
-	inldoor = False
-	inrdoor = False
-	nearLDoor = False
-	nearRDoor = False
-	crispy = False
-	
 	# Create proximity manager 
-	global autodoor, goal, crispy_manager
 	goal = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
 	crispy_manager = vizproximity.Manager()
 
 	# Proximity sensor
-	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor
 	ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
 	rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
 	ldoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
 	rdoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,-32))
 	
+	# Sensor sizes for each width condition
 	if wid == 0:
 		crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
 		crispy_sensor2 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,-1.75), (29.5,-3.75),(1.3,-32), (0.5,-31.3), (0,-31.75)]), source=viz.Matrix.translate(-22,0,35))
@@ -433,22 +414,17 @@ def sensorSetup():
 	friction conditions.
 	
 	"""
-	# Set up door opening and 'in' sensors
-	global inldoor, inrdoor, nearLDoor, nearRDoor, crispy
-	inldoor = False
-	inrdoor = False
-	nearLDoor = False
-	nearRDoor = False
-	crispy = False
-	
-	#Create proximity manager 
+	# Sensors (for tracing events)
+	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor
+	# Managers
 	global autodoor, goal, crispy_manager
+	
+	# Create proximity manager 
 	goal = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
 	crispy_manager = vizproximity.Manager()
 
 	# Proximity sensors
-	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor
 	ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
 	rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,-32))
 	crispy_sensor1 = vizproximity.Sensor(vizproximity.PolygonArea([(0,0),(29,0),(27.25,1.75), (28.,2.5),(0,30.5)]),source=viz.Matrix.translate(-22,0,-35))
@@ -486,6 +462,13 @@ def sensorSetup():
 def loadInclineParam(inc):
 	"""Set up a trial where the condition is between inclines."""
 	global starting_pos
+	# Managers
+	global autodoor, goal, crispy_manager
+	# Door objects (for opening animation)
+	global door_l, door_r
+	# Sensors
+	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor
+	
 	starting_pos = [-20, -11, 0]
 	# Computer game controls
 	viz.cam.setHandler(vizcam.KeyboardCamera(forward='w',backward='s', left='a',right='d',turnRight='e',turnLeft='q'))
@@ -506,32 +489,17 @@ def loadInclineParam(inc):
 	ground = viz.addChild("ground.osgb")
 	ground.texture(lava)
 	ground.setScale(1.5,0,1.5)
-	global inldoor, inrdoor, nearLDoor, nearRDoor,crispy, goal
-
-	# Set up sensors
-	inldoor = False
-	inrdoor = False
-	nearLDoor = False
-	nearRDoor = False
-	crispy = False
 	
 	# Create proximity manager 
-	global autodoor, goal, crispy_manager
-	goal= vizproximity.Manager()
+	goal = vizproximity.Manager()
 	autodoor = vizproximity.Manager()
 	crispy_manager = vizproximity.Manager()
-
-	# Proximity sensor
-	global rdoor_sensor, ldoor_sensor, ldoor_open_sensor, rdoor_open_sensor, plankl_sensor, plankr_sensor, \
-	plankstarts_sensor, floor_lSensor, floor_rSensor, floort1_sensor, floorT2Sensor
 	
 	# Add main viewpoint as proximity target 
 	target = vizproximity.Target(viz.MainView)
 	goal.addTarget(target)
 	autodoor.addTarget(target)
 	crispy_manager.addTarget(target)
-	
-	global plankl, plankr
 
 	# Main room setup
 	wall_b = vizshape.addPlane([75, 30])
@@ -544,7 +512,6 @@ def loadInclineParam(inc):
 	ceiling.setPosition(15,10, 0)
 	ceiling.texture(metal)
 
-	global door_l, door_r
 	door_l = viz.add("box.wrl", pos = [0,1,8], scale = [2.5,3.8,.05])
 	door_l.setEuler(90,0,0)
 	door_l.setPosition(22.5,-20,4.75)
@@ -559,7 +526,9 @@ def loadInclineParam(inc):
 	plankr = vizfx.addChild(asset_dir + "p_mid_rubber.osgb")
 	
 	# I've nicknamed the next section of code:
-	# "I hate you for being right, Pythagoras"
+	# "I hate you and your damned theorem for being right, Pythagoras"
+	# Seriously. a^2 + b^2 = c^2 is now burned into my brain
+	# But those decimal places are finicky
 	
 	if inc == 0:
 		plankl.setEuler([45,-20,0])
@@ -568,12 +537,12 @@ def loadInclineParam(inc):
 		wall_r = vizshape.addPlane([75, 30])
 		wall_r.setPosition(10,0,-35)
 		wall_r.setEuler(x=0, y=90, z=0)
-		wall_r.texture(metal)
+		wall_r.color(viz.BLACK)
 		# leftmost wall
 		wall_l = vizshape.addPlane([75,30])
 		wall_l.setPosition(10,0,35)
 		wall_l.setEuler(x=0, y=-90, z=0)
-		wall_l.texture(metal)
+		wall_l.color(viz.BLACK)
 		
 		# destination point
 		plankl.setPosition([-6.7, -7.15, 15.55])
@@ -663,6 +632,7 @@ def loadInclineParam(inc):
 		door_l.setPosition(12.5,2.0,29.75)
 		door_r.setPosition(12.5,-11.5,-32.25)
 		
+		# Proximity sensors
 		ldoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,1.5,32))
 		rdoor_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(15.5,-10.5,-32))
 		ldoor_open_sensor = vizproximity.Sensor(vizproximity.Box([5,5,5]),source=viz.Matrix.translate(12,1.5,32))
@@ -679,12 +649,12 @@ def loadInclineParam(inc):
 		wall_r = vizshape.addPlane([75, 30])
 		wall_r.setPosition(10,0,-35)
 		wall_r.setEuler(x=0, y=90, z=0)
-		wall_r.texture(metal)
+		wall_r.color(viz.BLACK)
 		# leftmost wall
 		wall_l = vizshape.addPlane([75,30])
 		wall_l.setPosition(10,0,35)
 		wall_l.setEuler(x=0, y=-90, z=0)
-		wall_l.texture(metal)
+		wall_l.color(viz.BLACK)
 		
 		# destination point
 		plankl.setPosition([-5.95, -14, 16.25])
@@ -805,13 +775,14 @@ def loadInclineParam(inc):
 	
 def friedParticipant(event):
 	"""Reset participant location if they step out of bounds.
+	Add 1 to the out of bounds counter.
 	@args:
 		event (vizproximity.ENTER_PROXIMITY_EVENT):
 		User walks into lava.
 		
 	"""
 	global oops
-	viz.waitTime(1)
+	viz.waitTime(3)
 	oops += 1
 	viz.MainView.setPosition(starting_pos)
 	
@@ -820,10 +791,8 @@ def openSensame(event):
 	global nearLDoor, nearRDoor
 	opendoor = vizact.spinto([0,1,0, 181], 360)
 	if event.sensor == ldoor_open_sensor:
-		nearLDoor = True
 		door_l.addAction(opendoor)
 	elif event.sensor == rdoor_open_sensor:
-		nearRDoor = True
 		door_r.addAction(opendoor)
 	
 def enterProximity(event):
@@ -833,14 +802,11 @@ def enterProximity(event):
 		User walks into the goal area.
 		
 	"""
-	global inldoor, inrdoor, t0, autodoor, goal, crispy_manager
+	global t0, autodoor, goal, crispy_manager
 	finish_time = time.time() - t0
 	if event.sensor == ldoor_sensor:
-		inldoor = True
 		choice = "L"
-		
 	elif event.sensor == rdoor_sensor:
-		inrdoor = True
 		choice = "R"
 		
 	autodoor.clearSensors()
@@ -857,8 +823,7 @@ def waitTrial():
 
 def run():
 	"""Run the experiment."""
-	#conds = ["00", "01", "02", "03", "04", "05", "10", "11", "12", "13", "14", "15", "20", "21", "30", "31"]
-	conds = ["21"]
+	conds = ["00", "01", "02", "03", "04", "05", "10", "11", "12", "13", "14", "15", "20", "21", "30", "31"]
 	shuffle(conds)
 	for c in conds:
 		yield runTrial(c)
@@ -874,6 +839,7 @@ def runTrial(c):
 	global trial_cond, t0, oops
 	trial_cond = c
 	if c[0] == "0":
+		letThereBeLight()
 		loadBaseScene()
 		loadTextureConditions(int(c[1]))
 		sensorSetup()
@@ -881,12 +847,14 @@ def runTrial(c):
 		oops = 0
 
 	elif c[0] == "1":
+		letThereBeLight()
 		loadBaseScene()
 		loadWidthGeometry(int(c[1]))
 		t0 = time.time()
 		oops = 0
 		
 	elif c[0]=="2":
+		letThereBeLight()
 		loadBaseScene()
 		loadFrictionConditions(int(c[1]))
 		sensorSetup()
@@ -894,6 +862,7 @@ def runTrial(c):
 		oops = 0
 		
 	elif c[0]=="3":
+		letThereBeLight()
 		loadInclineParam(int(c[1]))
 		t0 = time.time()
 		oops = 0
